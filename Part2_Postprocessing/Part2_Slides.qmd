@@ -1,0 +1,210 @@
+---
+format:
+  revealjs:
+    theme: [default, custom.css]
+    slide-number: true
+    multiplex: true
+    transition: fade
+    background-transition: fade
+    smaller: true
+    margin: 0.25
+    code-block-height: 1650px
+    preview-links: auto
+    pointer:
+      pointerSize: 24
+      color: '#32cd32'
+    highlight-style: ayu-mirage
+    revealjs-plugins:
+      - pointer
+    mermaid:
+      theme: neutral
+editor: visual
+---
+
+```{r setup}
+library(midar)
+library(here)
+
+```
+
+##  {.title}
+
+::: {style="font-size: 62px; font-weight: 400; color: #024061"}
+Data Processing and Quality Control
+:::
+
+::: {style="font-size: 48px; font-weight: 100; color: #3D7491"}
+Part 2 of Data Workshop 2024 by SLING
+:::
+
+<br/><br/>
+
+::: {style="font-size: 28px; font-weight: 100; color: #3D7491"}
+Bo Burla - October 2024
+:::
+
+::: notes
+Hi everybody! Would like to introduce MiDAR
+:::
+
+## Postprocessing Workflow
+
+```{mermaid}
+%%| fig-height: 12 
+flowchart LR
+    subgraph initial[First Overview]
+        direction TB
+        preprocess[/Pre-processed <br/>raw signals/] --> metadataannot[Metadata]
+        subgraph metadata[Analysis metadata]
+            direction TB
+            metadataannot --> linkmetadata1[/Annotated raw signals/]
+        end
+        subgraph QualityControl1[Quality Control I]
+            direction TB
+            linkmetadata1 --> analysis_qc[Analysis Trends]
+            analysis_qc --> outliers[Technical Outliers]
+            outliers --> missannotations[Wrong annotations]
+            missannotations --> featureannot[Feature annotation]
+            featureannot --> istdperf[ISTD performance]
+            istdperf --> linkmetadata2[/Annotated raw signals/]
+        end
+    end
+
+    subgraph Corrections1[Corrections I]
+        direction TB
+        linkmetadata3[/Annotated raw signals/] --> inteferences[Interferences Type 1/2 ]
+        inteferences --> background[Background]
+        background --> correctedraw[/Corrected raw signals/]
+    end
+
+    subgraph processing[Processing]
+        correctedraw2[/Corrected raw signals/] --> normalized_amount[Internal Standard]
+        subgraph Normalization
+        direction TB
+        normalized_amount --> normalizedistd[Sample amount]
+        end 
+        normalizedistd --> quantification[Quantification] 
+        quantification --> rawconc[/Raw concentrations/]
+        end
+
+    subgraph Corrections2 [Corrections II]
+        direction TB
+        rawconc2[/Raw concentrations/] --> drift[Drifts]
+        drift --> batch[Batch effects]
+        batch --> adjconc[/Adj. concentraions/]
+    end 
+
+    subgraph QualityControl2 [Quality Control II]
+        direction TB
+        adjconc3[/Adj. Concentraions/]--> signalnoise[Signal to Noise]
+        signalnoise --> linearity[Linear Response]
+        linearity --> analyticalvar[Analytical variability %CV]
+        analyticalvar --> dratio[D-ratio]
+        dratio --> filterdata[/Filtered dataset/]
+    end
+
+    subgraph Reporting
+        direction TB
+        filterdata2[/Filtered Dataset/] --> lipidnames[Metabolite Names]
+        lipidnames --> lipid_ids[Lipid IDs]
+        lipid_ids --> repors(Reports)
+        lipid_ids --> lipid_database[(Database <br/> Repositories)]
+    end
+    
+    initial --> Corrections1
+    Corrections1 --> processing
+    processing --> Corrections2
+    Corrections2 --> QualityControl2
+    QualityControl2 --> Reporting
+    
+
+```
+
+::: notes
+None
+:::
+
+## MiDAR - Background
+
+::: columns
+::: {.column width="50%"}
+-   Diversity analytical designs
+-   Diversity in projects and people
+-   Guidelines (i.e. Broadhurst et al.)
+:::
+
+::: {.column width="50%"}
+-   Many tools for EDA (e.g. Metaboanalyst)
+-   Few tools/functinalities for data (post)-processing
+-   Compatible to different analytical designs
+-   Performance (speed and datasize)
+:::
+:::
+
+## MiDAR - Aims
+
+::: columns
+::: {.column width="50%"}
+-   Data and Metadata managment
+-   Post-processing
+-   Quality Control
+-   Reporting
+:::
+
+::: {.column width="50%"}
+-   Standardization
+-   Reproducubility
+-   Sharerability
+:::
+:::
+
+## MiDAR - Structure
+
+::: columns
+::: {.column width="50%"}
+**Modules**
+
+-   Data
+
+-   Metadata
+
+-   Calculations
+
+-   Corrections
+
+-   QC
+
+-   Reporting
+
+-   Misc
+:::
+
+::: {.column width="50%"}
+-   Lipidomics & Metabolomics
+-   Targeted datasets
+:::
+:::
+
+| **Syntax** `midar::module_action_task(arguments, ...)`
+
+## Metadata
+
+![](images/clipboard-913933196.png){fig-align="center" width="589"}
+
+## Data in MiDAR
+
+```{r}
+#| echo: true
+#| output: true
+#| code-line-numbers: 1|2|4|6|7|8|6-8
+library(midar)
+file_path <- "./data/sPerfect_MRMkit-20240911.tsv"
+
+myexp <- MidarExperiment()
+
+myexp <- data_import_mrmkit(data = myexp, 
+                               path = file_path, 
+                               use_metadata = TRUE)
+```
+
+## Isotopic interferences

@@ -1,0 +1,98 @@
+---
+format:
+  revealjs:
+    theme: [default, custom.css]
+    slide-number: true
+    multiplex: true
+    transition: fade
+    background-transition: fade
+    smaller: true
+    margin: 0.25
+    code-block-height: 1650px
+    preview-links: auto
+    pointer:
+      pointerSize: 24
+      color: '#32cd32'
+    highlight-style: ayu-mirage
+    revealjs-plugins:
+      - pointer
+    mermaid:
+      theme: neutral
+editor: visual
+---
+
+```{r setup}
+library(midar)
+library(here)
+
+```
+
+##  {.title}
+
+::: {style="font-size: 62px; font-weight: 400; color: #024061"}
+Data Processing and Quality Control
+:::
+
+::: {style="font-size: 48px; font-weight: 100; color: #3D7491"}
+Part 2 of Data Workshop 2024 by SLING
+:::
+
+<br/><br/>
+
+::: {style="font-size: 28px; font-weight: 100; color: #3D7491"}
+Bo Burla - October 2024
+:::
+
+::: notes
+Hi everybody! Would like to introduce MiDAR
+:::
+
+
+## Metadata
+
+::: columns
+::: {.column width="50%"}
+-   Describes Data
+:::
+
+::: {.column width="50%"}
+:::
+:::
+
+![](images/clipboard-913933196.png){fig-align="center" width="589"}
+
+## MiDAR
+
+::: columns
+::: {.column width="30%"}
+-   Analysis metadata <br/><br/>
+-   Normalization\
+-   Quantification
+-   A
+-   A
+-   A
+:::
+
+::: {.column width="70%"}
+```{r}
+#| echo: true
+#| output: true
+#| code-line-numbers: 1|2|4|6|7|8|6-8
+library(midar)
+file_path <- "./data/sPerfect_MRMkit-20240911.tsv"
+
+myexp <- MidarExperiment()
+
+myexp <- rawdata_import_mrmkit(data = myexp, 
+                               path = file_path, 
+                               use_metadata = TRUE)
+
+myexp <- rawdata_import_mrmkit(data = myexp, 
+                               path = file_path, 
+                               use_metadata = TRUE)
+
+```
+:::
+:::
+
+## Isotopic interferences
