@@ -125,7 +125,19 @@ This is plot is an other way to obtain an overview of the study and QC samples a
 
 | Explore other PCA dimension and try adding blanks (i.e. PBLK) to the plot, by adding `"PBLK"` to `qc_types` below.
 
-`{r. } qc_plot_pca(   data = myexp,    variable = "intensity",    filtered_data = FALSE,   pca_dim = c(1,2),   label_k_mad = 3,    qc_types = c("SPL", "BQC", "NIST", "TQC"),   log_transform = TRUE,     point_size = 2, point_alpha = 0.7, font_base_size = 8, ellipse_alpha = 0.3,    remove_istds = TRUE,    min_median_signal = NA)`
+```{r}
+qc_plot_pca(
+  data = myexp, 
+  variable = "feature_intensity", 
+  filtered_data = FALSE,
+  pca_dim = c(1,2),
+  label_k_mad = 3, 
+  qc_types = c("SPL", "BQC", "NIST", "TQC"),
+  log_transform = TRUE,  
+  point_size = 2, point_alpha = 0.7, font_base_size = 8, ellipse_alpha = 0.3, 
+  remove_istds = TRUE, 
+  hide_label_text = NA)
+```
 
 ## Exclude the technical outlier and re-examine the PCA plot
 
@@ -230,6 +242,13 @@ myexp <- midar::correct_batcheffects(
   qc_types = "SPL", 
   correct_location = TRUE, 
   correct_scale = FALSE)
+
+my_trend_plot("conc", "PC 40:8")
+myexp <- midar::correct_batcheffects(
+  myexp, 
+  qc_types = "SPL", 
+  correct_location = TRUE, 
+  correct_scale = TRUE)
 
 my_trend_plot("conc", "PC 40:8")
 ```
