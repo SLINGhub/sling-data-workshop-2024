@@ -6,7 +6,7 @@
 
 ## Getting the Code
 
-All R code and datasets are provided as an [RStudio](https://www.rstudio.com/products/RStudio) project. The easiest way run this code is to clone the repository within RStudio (<https://github.com/SLINGhub/Burla_2024_FabryLipidomics.git>). Alternatively, you can also download the Github Repository and open the Rstudio project.
+All R code and datasets are provided as an [RStudio](https://www.rstudio.com/products/RStudio) project. The easiest way run this code is to clone the repository within RStudio ([https://github.com/SLINGhub/sling-data-workshop-2024)](https://github.com/SLINGhub/sling-data-workshop-2024). Alternatively, you can also download the Github Repository and open the Rstudio project.
 
 ## Setting up the Code
 
