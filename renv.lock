@@ -849,16 +849,6 @@
       ],
       "Hash": "e18861963cbc65a27736e02b3cd3c4a0"
     },
-    "here": {
-      "Package": "here",
-      "Version": "1.0.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "rprojroot"
-      ],
-      "Hash": "24b224366f9c2e7534d2344d10d59211"
-    },
     "highr": {
       "Package": "highr",
       "Version": "0.11",
@@ -1070,14 +1060,14 @@
     },
     "midar": {
       "Package": "midar",
-      "Version": "0.1.2.9007",
+      "Version": "0.1.2.9008",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "SLINGhub",
       "RemoteRepo": "midar",
       "RemoteRef": "development",
-      "RemoteSha": "f3c976c4c80899f27083b417d8517055a41e5792",
+      "RemoteSha": "1a3ccc6dec8696ff7e4bb0535227e342a63e4146",
       "Requirements": [
         "R",
         "assertr",
@@ -1108,7 +1098,7 @@
         "tidyr",
         "tidyselect"
       ],
-      "Hash": "832b4add4887a5116a18c40c6a5bf4e4"
+      "Hash": "797e4b9e4cad11b9d642f49a70ff90f6"
     },
     "mime": {
       "Package": "mime",
@@ -1421,16 +1411,6 @@
       ],
       "Hash": "062470668513dcda416927085ee9bdc7"
     },
-    "rprojroot": {
-      "Package": "rprojroot",
-      "Version": "2.0.4",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R"
-      ],
-      "Hash": "4c8415e0ec1e29f3f4f6fc108bef0144"
-    },
     "sandwich": {
       "Package": "sandwich",
       "Version": "3.1-1",
@@ -1566,17 +1546,6 @@
         "vctrs"
       ],
       "Hash": "a84e2cc86d07289b3b6f5069df7a004c"
-    },
-    "tictoc": {
-      "Package": "tictoc",
-      "Version": "1.2.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "methods"
-      ],
-      "Hash": "646895a33d57984ce7534249bd9adf64"
     },
     "tidyr": {
       "Package": "tidyr",
