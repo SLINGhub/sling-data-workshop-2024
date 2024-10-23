@@ -1060,14 +1060,14 @@
     },
     "midar": {
       "Package": "midar",
-      "Version": "0.1.2.9008",
+      "Version": "0.1.2.9009",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "SLINGhub",
       "RemoteRepo": "midar",
       "RemoteRef": "development",
-      "RemoteSha": "c82fe39bf14d34607dc352bb701646342685c6aa",
+      "RemoteSha": "5ecc47ae20a7ec559c69d9f781ad59b489efb87c",
       "Requirements": [
         "R",
         "assertr",
@@ -1098,7 +1098,7 @@
         "tidyr",
         "tidyselect"
       ],
-      "Hash": "269236948c78b54d97992f45cf4b52d5"
+      "Hash": "17270be8d6f4eb79ec007af91ca45ba7"
     },
     "mime": {
       "Package": "mime",
