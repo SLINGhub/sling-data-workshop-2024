@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.550">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Bo Burla">
+
+<title>SLING Data Analysis Workshop</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Part2_Postprocessing_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Part2_Postprocessing_files/libs/quarto-html/quarto.js"></script>
+<script src="Part2_Postprocessing_files/libs/quarto-html/popper.min.js"></script>
+<script src="Part2_Postprocessing_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Part2_Postprocessing_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Part2_Postprocessing_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Part2_Postprocessing_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Part2_Postprocessing_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Part2_Postprocessing_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Part2_Postprocessing_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full">
+
+<main class="content column-page" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">SLING Data Analysis Workshop</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<p class="subtitle lead">Part 2: Post-processing of integrated peak data</p>
+</div>
+
+
+
+<div class="quarto-title-meta column-page">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Bo Burla </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="importing-mrmkit-results-with-integrated-peak-areas" class="level2">
+<h2 class="anchored" data-anchor-id="importing-mrmkit-results-with-integrated-peak-areas">Importing MRMkit results with integrated peak areas</h2>
+<p>We import the peak areas obtained from peak integration using <code>MRMkit</code> in Part 1 of this workshop. This <code>MRMkit</code> result file contains the peak areas of integrated peaks (features) in all processed raw data file. In addition, the <code>MRMkit</code> result file reports peak retention times and widths, and metadata from the mzML files, i.e.&nbsp;the acquisition time-stamp and transition m/z values. We will import these metadata as well by setting <code>use_metadata = TRUE</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>data_path <span class="ot">&lt;-</span> <span class="st">"./data/sPerfect_MRMkit-20240911.tsv"</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>metadata_path <span class="ot">&lt;-</span> <span class="st">"./data/sPerfect_Metadata_MidarTemplate-20241001_All.xlsm"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">MidarExperiment</span>(<span class="at">title =</span> <span class="st">"sPerfect"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">data_import_mrmkit</span>(myexp, <span class="at">path =</span> data_path, <span class="at">use_metadata =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ Imported 499 analyses with 503 features</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>ℹ `feature_area` selected as default raw feature intensity. Use `data_set_intensity_var()` to modify.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ Analysis metadata associated with 499 analyses.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ Feature metadata associated with 503 features.</code></pre>
+</div>
+</div>
+</section>
+<section id="a-glimpse-on-the-imported-mrmkit-results" class="level2">
+<h2 class="anchored" data-anchor-id="a-glimpse-on-the-imported-mrmkit-results">A glimpse on the imported MRMkit results</h2>
+<p>Let’s have a look at the imported data be running code below or by running <code>View(myexp@dataset_orig)</code> in the console. As we can see, the data is in the long format, allowing use to view multiple parameters for each analysis-feature pair.</p>
+<p>Explore the different columns and use filter function in the RStudio table viewer.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(myexp<span class="sc">@</span>dataset_orig) <span class="co"># </span><span class="al">TODO</span><span class="co">: Replace by actual getter</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 250,997 × 19
+   analysis_id  data_source raw_data_filename acquisition_time_stamp sample_type
+   &lt;chr&gt;        &lt;chr&gt;       &lt;chr&gt;             &lt;dttm&gt;                 &lt;chr&gt;      
+ 1 Longit_BLAN… ./data/sPe… Longit_BLANK-01 … 2017-10-20 14:15:36    SBLK       
+ 2 Longit_B-IS… ./data/sPe… Longit_B-ISTD 01… 2017-10-20 14:27:06    PBLK       
+ 3 Longit_Un-I… ./data/sPe… Longit_Un-ISTD 0… 2017-10-20 14:38:26    UBLK       
+ 4 Longit_LTR … ./data/sPe… Longit_LTR 01     2017-10-20 14:49:48    LTR        
+ 5 Longit_TQC-… ./data/sPe… Longit_TQC-10%    2017-10-20 15:12:31    TQC        
+ 6 Longit_TQC-… ./data/sPe… Longit_TQC-20%    2017-10-20 15:23:51    TQC        
+ 7 Longit_TQC-… ./data/sPe… Longit_TQC-40%    2017-10-20 15:35:11    TQC        
+ 8 Longit_TQC-… ./data/sPe… Longit_TQC-60%    2017-10-20 15:46:31    TQC        
+ 9 Longit_TQC-… ./data/sPe… Longit_TQC-80%    2017-10-20 15:57:51    TQC        
+10 Longit_TQC-… ./data/sPe… Longit_TQC-100%   2017-10-20 16:09:11    TQC        
+# ℹ 250,987 more rows
+# ℹ 14 more variables: batch_id &lt;chr&gt;, feature_id &lt;chr&gt;,
+#   norm_istd_feature_id &lt;chr&gt;, integration_qualifier &lt;lgl&gt;, feature_rt &lt;dbl&gt;,
+#   feature_area &lt;dbl&gt;, feature_height &lt;dbl&gt;, feature_fwhm &lt;dbl&gt;,
+#   feature_int_start &lt;dbl&gt;, feature_int_end &lt;dbl&gt;, method_polarity &lt;chr&gt;,
+#   method_precursor_mz &lt;dbl&gt;, method_product_mz &lt;dbl&gt;,
+#   method_collision_energy &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="analytical-design-and-timeline" class="level2">
+<h2 class="anchored" data-anchor-id="analytical-design-and-timeline">Analytical design and timeline</h2>
+<p>Having an overview of the analysis design and timelines can be helpful for the next processing steps. The plot below shows the batch structure, the QC samples included with their positions, and some information on date, duration and run time of the analysis in the title. Use <code>show_timestamp = TRUE</code> to show the analysis timestamps in the x axis. This can be helpful to see if there were interruptions during the analysis and when the different batches were analysed.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_plot_runsequence</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  myexp, </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="cn">NA</span>, </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_batches =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">batches_as_shades =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_shading_color =</span> <span class="st">"#fffbdb"</span>, </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">segment_thickness =</span> <span class="fl">0.5</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_timestamp =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="signal-trends-of-internal-standards" class="level2">
+<h2 class="anchored" data-anchor-id="signal-trends-of-internal-standards">Signal trends of Internal Standards</h2>
+<p>To have a first idea on how the analyses went, we can look at the Internal Standards in all samples across all 6 batches. Since the same ISTD amount was spiked into each sample (except SBLK) we should expect same intensities in all samples and sample types. What do you observe? You can set <code>save_pdf</code> to TRUE to have a pdf from the plots (which will be in the <code>output</code> folder).</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_plot_runscatter</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">"intensity"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="fu">c</span>(<span class="st">"BQC"</span>, <span class="st">"TQC"</span>, <span class="st">"SPL"</span>, <span class="st">"PBLK"</span>, <span class="st">"SBLK"</span>),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">analysis_no_range =</span> <span class="cn">NA</span>, <span class="co">#get_batch_boundaries(myexp, c(1,6)), </span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">filt_include_features =</span> <span class="st">"ISTD"</span>, </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">filt_exclude_features =</span> <span class="st">"Hex|282"</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">cap_outliers =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">log_scale =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_batches =</span> <span class="cn">TRUE</span>,<span class="at">base_font_size =</span> <span class="dv">5</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">save_pdf =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">"./output/runscatter_istd.pdf"</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols_page =</span> <span class="dv">3</span>, <span class="at">rows_page =</span> <span class="dv">2</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Generating plots (5 pages)...</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-2-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-2-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-2-5.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> - done!</code></pre>
+</div>
+</div>
+</section>
+<section id="adding-detailed-metadata" class="level2">
+<h2 class="anchored" data-anchor-id="adding-detailed-metadata">Adding detailed metadata</h2>
+<p>For further processing we need additional metadata describing the samples and features. The MiDAR EXCEL template is an option to collect, organize and pre-validate analysis metadata. Open the XLSM file in the <code>data</code> folder to explore the metadata structure.</p>
+<p>Using below function we import metadata from this template. In case of errors in the metadata (e.g.&nbsp;duplicate or missing ID), the import will fail with an error message. A summary of identified or potential issues in the metadata will be shown in a table. Work through these warnings to check your metadata, or ignore the warnings and proceed using <code>ignore_warnings = TRUE</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">metadata_import_midarxlm</span>(myexp, <span class="at">path =</span> metadata_path, <span class="at">ignore_warnings =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>! Metadata has following warnings and notifications:</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>---------------------------------------------------------------------------------
+  Type Table    Issue                           Column                Count
+1 W    Analyses Analyses not in analysis data   NA                       15
+2 W    Features Feature(s) not in analysis data NA                        3
+3 W    ISTDs    Internal standard(s) not used   quant_istd_feature_id     1
+---------------------------------------------------------------------------------
+E = Error, W = Warning, N = Note
+---------------------------------------------------------------------------------</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ Analysis metadata associated with 499 analyses.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ Feature metadata associated with 503 features.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ Internal Standard metadata associated with 17 ISTDs.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ Response Curve metadata associated with 12 analyses.</code></pre>
+</div>
+</div>
+</section>
+<section id="overall-trends-and-possible-technical-outlier" class="level2">
+<h2 class="anchored" data-anchor-id="overall-trends-and-possible-technical-outlier">Overall trends and possible technical outlier</h2>
+<p>To examine overall technical trends and issues affecting the majority of analytes (features), the RLA (Relative Log Abundance) plot can useful (De Livera et al, Analytical Chemistry, 2015). In this plot all feature is normalized (by the median across or within-batch) and the plotted as a boxplot per sample. This plot can to identify potential pipetting errors, sample spillage, injection volume changes or overall instrument sensitivity changes.</p>
+<blockquote class="blockquote">
+<p>First run the code below as it is. What do you observe? Then have a look at batch 6 only uncommenting the line #analysis_no_range.. What does this tell us? Identify the potential … by setting <code>x_axis_variable = "analysis_id"</code>. Set the y axis limits manually <code>y_lim = c(-2,2)</code> and show all analyses to see if there are other trends or fluctuations.</p>
+</blockquote>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>midar<span class="sc">::</span><span class="fu">qc_plot_rla_boxplot</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">rla_type_batch =</span> <span class="fu">c</span>(<span class="st">"within"</span>),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">"intensity"</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="fu">c</span>(<span class="st">"BQC"</span>, <span class="st">"SPL"</span>, <span class="st">"RQC"</span>, <span class="st">"TQC"</span>, <span class="st">"PBLK"</span>), </span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_data =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">#analysis_no_range = get_batch_boundaries(myexp, batch_ids = c(6,6)), </span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#y_lim = c(-3,3),</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_axis_variable =</span> <span class="st">"run_seq_num"</span>,</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">ignore_outliers =</span> <span class="cn">FALSE</span>, <span class="at">x_gridlines =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">batches_as_shades =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">linewidth =</span> <span class="fl">0.1</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="pca-plot-of-all-qc-types" class="level2">
+<h2 class="anchored" data-anchor-id="pca-plot-of-all-qc-types">PCA plot of all QC types</h2>
+<p>This is plot is an other way to obtain an overview of the study and QC samples and to identify potential issues in the data.</p>
+<div class="line-block">Explore other PCA dimension and try adding blanks (i.e.&nbsp;PBLK) to the plot, by adding <code>"PBLK"</code> to <code>qc_types</code> below.</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_plot_pca</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp, </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">"feature_intensity"</span>, </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_data =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">pca_dim =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">label_k_mad =</span> <span class="dv">3</span>, </span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="fu">c</span>(<span class="st">"SPL"</span>, <span class="st">"BQC"</span>, <span class="st">"NIST"</span>, <span class="st">"TQC"</span>),</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">log_transform =</span> <span class="cn">TRUE</span>,  </span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">point_size =</span> <span class="dv">2</span>, <span class="at">point_alpha =</span> <span class="fl">0.7</span>, <span class="at">font_base_size =</span> <span class="dv">8</span>, <span class="at">ellipse_alpha =</span> <span class="fl">0.3</span>, </span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">remove_istds =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="exclude-technical-outliers" class="level2">
+<h2 class="anchored" data-anchor-id="exclude-technical-outliers">Exclude technical outliers</h2>
+<p>We classified a technical outlier and decide to remove it from all downstream processing, using <code>data_exclude_analyses()</code>. What do we now observe in the new PCA plot?</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a> <span class="co"># Exclude the sample from the processing</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> <span class="fu">data_exclude_analyses</span>(myexp, <span class="at">analyses_exlude =</span> <span class="fu">c</span>(<span class="st">"Longit_batch6_51"</span>), <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>ℹ 1 analyses were excluded for downstream processing. Please reprocess data.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Replot the PCA</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_plot_pca</span>(</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp, </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">"feature_intensity"</span>, </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_data =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">pca_dim =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">label_k_mad =</span> <span class="dv">3</span>, </span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="fu">c</span>(<span class="st">"SPL"</span>, <span class="st">"BQC"</span>, <span class="st">"NIST"</span>, <span class="st">"TQC"</span>),</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">log_transform =</span> <span class="cn">TRUE</span>,  </span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">point_size =</span> <span class="dv">2</span>, <span class="at">point_alpha =</span> <span class="fl">0.7</span>, <span class="at">font_base_size =</span> <span class="dv">8</span>, <span class="at">ellipse_alpha =</span> <span class="fl">0.3</span>, </span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">remove_istds =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">hide_label_text =</span> <span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="response-curves" class="level2">
+<h2 class="anchored" data-anchor-id="response-curves">Response curves</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Exclude very low abundant features</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">qc_apply_feature_filter</span>(myexp, <span class="at">intensity.median.spl.min =</span> <span class="dv">200</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Calculating feature QC metrics - please wait...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ 
+New QC filter criteria were defined: 416 of 424 quantifier features meet QC criteria (excluding the 25 quantifier ISTD features).</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_plot_responsecurves</span>(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp, </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">"intensity"</span>, </span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_data =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">feature_incl_filt =</span> <span class="st">"PC 3[2-9]"</span>, </span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">save_pdf =</span> <span class="cn">FALSE</span>, <span class="at">cols_page =</span> <span class="dv">5</span>, </span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Generating plots (2 pages):</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                                        
+  |                                                  |   0%</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                                        
+  |=========================                         |  50%</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                                        
+  |==================================================| 100% - done!</code></pre>
+</div>
+</div>
+</section>
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section"></h2>
+</section>
+<section id="isotope-interference-correction" class="level2">
+<h2 class="anchored" data-anchor-id="isotope-interference-correction">Isotope interference correction</h2>
+<p>As shown in the course presentation, we have a few cases where peaks were co-integrated with the interfering isotope peaks of other lipid species. We can subtract these intereferences from the raw intensities (areas) with below function, which uses information in the metadata.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">correct_interferences</span>(myexp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ Interference-correction has been applied to 11 of the 503 features.</code></pre>
+</div>
+</div>
+</section>
+<section id="normalization-and-quantification-based-on-istds" class="level2">
+<h2 class="anchored" data-anchor-id="normalization-and-quantification-based-on-istds">Normalization and quantification based on ISTDs</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">calc_normalize_by_istd</span>(myexp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ 461 features normalized with 17 ISTDs in 498 analyses.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">calc_quant_by_istd</span>(myexp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ 461 feature concentrations calculated based on 17 ISTDs and sample amounts of 498 analyses.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>ℹ Concentrations are given in μmol/L.</code></pre>
+</div>
+</div>
+</section>
+<section id="examine-the-effects-of-class-wide-istd-normalization" class="level2">
+<h2 class="anchored" data-anchor-id="examine-the-effects-of-class-wide-istd-normalization">Examine the effects of class-wide ISTD normalization</h2>
+<p>Class-specific ISTDs are common in lipidomics. However, normalization with internal standards can lead to artefacts and increase the data variability rather than reduce technical variability.</p>
+<div class="line-block">What do we observe below? What could be the reasons?</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">qc_apply_feature_filter</span>(myexp, <span class="at">intensity.median.spl.min =</span> <span class="dv">1000</span>, <span class="at">overwrite =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Calculating feature QC metrics - please wait...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ 
+New QC filter criteria were defined: 394 of 424 quantifier features meet QC criteria (excluding the 25 quantifier ISTD features).</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_plot_normalization_cv</span>(</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp, </span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_data =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_type =</span> <span class="st">"SPL"</span>, </span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">var_before =</span> <span class="st">"intensity"</span>, </span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">var_after =</span> <span class="st">"norm_intensity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="drift-correction" class="level2">
+<h2 class="anchored" data-anchor-id="drift-correction">Drift correction</h2>
+<p>We will be using a Gaussian kernel smoothing based on the study sample to correct for within-batch drifts in the concentration data. The summary provided by this function is not meant to reflect real diagostics of the fit, but rather to understand if the fit caused any artefacts. Beside smoothing the trend, there is also an option to scale along the fit by setting <code>scale_smooth = TRUE</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">correct_drift_gaussiankernel</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp,</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="fu">c</span>(<span class="st">"SPL"</span>),</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_wise =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">kernel_size =</span> <span class="dv">10</span>,</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">outlier_filter =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">outlier_ksd =</span> <span class="dv">5</span>,</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">location_smooth =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">scale_smooth =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_progress =</span> <span class="cn">TRUE</span>  <span class="co"># set to FALSE when rendering</span></span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Applying drift correction...</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                                  
+  |                                            |   0%
+  |                                                  
+  |=                                           |   2%
+  |                                                  
+  |==                                          |   4%
+  |                                                  
+  |===                                         |   6%
+  |                                                  
+  |====                                        |   8%
+  |                                                  
+  |====                                        |  10%
+  |                                                  
+  |=====                                       |  12%
+  |                                                  
+  |======                                      |  14%
+  |                                                  
+  |=======                                     |  16%
+  |                                                  
+  |========                                    |  18%
+  |                                                  
+  |=========                                   |  20%
+  |                                                  
+  |==========                                  |  22%
+  |                                                  
+  |===========                                 |  24%
+  |                                                  
+  |============                                |  26%
+  |                                                  
+  |============                                |  28%
+  |                                                  
+  |=============                               |  30%
+  |                                                  
+  |==============                              |  32%
+  |                                                  
+  |===============                             |  34%
+  |                                                  
+  |================                            |  36%
+  |                                                  
+  |=================                           |  38%
+  |                                                  
+  |==================                          |  40%
+  |                                                  
+  |===================                         |  43%
+  |                                                  
+  |====================                        |  45%
+  |                                                  
+  |====================                        |  47%
+  |                                                  
+  |=====================                       |  49%
+  |                                                  
+  |======================                      |  51%
+  |                                                  
+  |=======================                     |  53%
+  |                                                  
+  |========================                    |  55%
+  |                                                  
+  |=========================                   |  57%
+  |                                                  
+  |==========================                  |  59%
+  |                                                  
+  |===========================                 |  61%
+  |                                                  
+  |============================                |  63%
+  |                                                  
+  |=============================               |  65%
+  |                                                  
+  |=============================               |  67%
+  |                                                  
+  |==============================              |  69%
+  |                                                  
+  |===============================             |  71%
+  |                                                  
+  |================================            |  73%
+  |                                                  
+  |=================================           |  75%
+  |                                                  
+  |==================================          |  77%
+  |                                                  
+  |===================================         |  79%
+  |                                                  
+  |====================================        |  81%
+  |                                                  
+  |=====================================       |  83%
+  |                                                  
+  |=====================================       |  85%
+  |                                                  
+  |======================================      |  87%
+  |                                                  
+  |=======================================     |  89%
+  |                                                  
+  |========================================    |  91%
+  |                                                  
+  |=========================================   |  93%
+  |                                                  
+  |==========================================  |  95%
+  |                                                  
+  |=========================================== |  97%
+  |                                                  
+  |============================================|  99%
+  |                                                  
+  |============================================| 100% - trend smoothing done!
+
+  |                                                  
+  |                                            |   0%
+  |                                                  
+  |=                                           |   2%
+  |                                                  
+  |==                                          |   4%
+  |                                                  
+  |===                                         |   6%
+  |                                                  
+  |====                                        |   8%
+  |                                                  
+  |====                                        |  10%
+  |                                                  
+  |=====                                       |  12%
+  |                                                  
+  |======                                      |  14%
+  |                                                  
+  |=======                                     |  16%
+  |                                                  
+  |========                                    |  18%
+  |                                                  
+  |=========                                   |  20%
+  |                                                  
+  |==========                                  |  22%
+  |                                                  
+  |===========                                 |  24%
+  |                                                  
+  |============                                |  26%
+  |                                                  
+  |============                                |  28%
+  |                                                  
+  |=============                               |  30%
+  |                                                  
+  |==============                              |  32%
+  |                                                  
+  |===============                             |  34%
+  |                                                  
+  |================                            |  36%
+  |                                                  
+  |=================                           |  38%
+  |                                                  
+  |==================                          |  40%
+  |                                                  
+  |===================                         |  43%
+  |                                                  
+  |====================                        |  45%
+  |                                                  
+  |====================                        |  47%
+  |                                                  
+  |=====================                       |  49%
+  |                                                  
+  |======================                      |  51%
+  |                                                  
+  |=======================                     |  53%
+  |                                                  
+  |========================                    |  55%
+  |                                                  
+  |=========================                   |  57%
+  |                                                  
+  |==========================                  |  59%
+  |                                                  
+  |===========================                 |  61%
+  |                                                  
+  |============================                |  63%
+  |                                                  
+  |=============================               |  65%
+  |                                                  
+  |=============================               |  67%
+  |                                                  
+  |==============================              |  69%
+  |                                                  
+  |===============================             |  71%
+  |                                                  
+  |================================            |  73%
+  |                                                  
+  |=================================           |  75%
+  |                                                  
+  |==================================          |  77%
+  |                                                  
+  |===================================         |  79%
+  |                                                  
+  |====================================        |  81%
+  |                                                  
+  |=====================================       |  83%
+  |                                                  
+  |=====================================       |  85%
+  |                                                  
+  |======================================      |  87%
+  |                                                  
+  |=======================================     |  89%
+  |                                                  
+  |========================================    |  91%
+  |                                                  
+  |=========================================   |  93%
+  |                                                  
+  |==========================================  |  95%
+  |                                                  
+  |=========================================== |  97%
+  |                                                  
+  |============================================|  99%
+  |                                                  
+  |============================================| 100% - trend recalc done!</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ Drift correction (batch-wise) was applied to raw concentrations of 461 of 461 features.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>ℹ The median CV of all features in study samples (batche medians) decreased by -1.7% (-3.7 to 0.3%) to 42.2%.</code></pre>
+</div>
+</div>
+<p>To illustrate the correction we will plot an example (PC 40:8) before after the drift and batch correction. Since we use the same plot several tomes, we first create a function wrapping the plot functionaly more easily.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a wrapper function</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>my_trend_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(variable, feature){</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">qc_plot_runscatter</span>(</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> myexp,</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">variable =</span> variable,</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">qc_types =</span> <span class="fu">c</span>(<span class="st">"BQC"</span>, <span class="st">"TQC"</span>, <span class="st">"SPL"</span>),</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">filt_include_features =</span> feature,</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">filt_exclude_features =</span> <span class="st">"ISTD"</span>,</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">cap_outliers =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">log_scale =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">show_trend =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">save_pdf =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="st">"./output/runscatter_PC408_beforecorr.pdf"</span>,</span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols_page =</span> <span class="dv">1</span>, <span class="at">rows_page =</span> <span class="dv">1</span>, </span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Let’s use this before defined function to plot the trends of one selected example before and after within-batch smoothing. What do we observe?</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">my_trend_plot</span>(<span class="st">"conc_raw"</span>, <span class="st">"PC 40:8"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Generating plots (1 page)...</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> - done!</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">my_trend_plot</span>(<span class="st">"conc"</span>, <span class="st">"PC 40:8"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Generating plots (1 page)...</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> - done!</code></pre>
+</div>
+</div>
+</section>
+<section id="batch-effect-correction" class="level2">
+<h2 class="anchored" data-anchor-id="batch-effect-correction">Batch-effect correction</h2>
+<p>As we observed the trend lines of the different batches are not aligned. We will use <code>correct_batcheffects()</code> to correct for median center (location) and scale differences between the batches. The define that the correction should be based on the study samples medians. An optinal scale correction can be performed by setting <code>correct_scale = FALSE</code>. After the correction we directly plot our example lipid species again. What do you observe now?</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">correct_batcheffects</span>(</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  myexp, </span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="st">"SPL"</span>, <span class="at">overwrite =</span> T,</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct_location =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct_scale =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 461 features.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>ℹ The median CV of features in the study samples across batches decreased by -0.6% (-2.2 to 1.0%) to 44.7%.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">my_trend_plot</span>(<span class="st">"conc"</span>, <span class="st">"PC 40:8"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Generating plots (1 page)...</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> - done!</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">correct_batcheffects</span>(</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>  myexp, </span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="st">"SPL"</span>, <span class="at">overwrite =</span> T,</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct_location =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct_scale =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>! Previous batch correction is being overwritten!</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 461 features.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>ℹ The median CV of features in the study samples across batches decreased by -0.5% (-2.7 to 1.7%) to 45.2%.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">my_trend_plot</span>(<span class="st">"conc"</span>, <span class="st">"PC 40:8"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Generating plots (1 page)...</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> - done!</code></pre>
+</div>
+</div>
+</section>
+<section id="saving-runscatter-plots-of-all-features-as-pdf" class="level2">
+<h2 class="anchored" data-anchor-id="saving-runscatter-plots-of-all-features-as-pdf">Saving <em>runscatter</em> plots of all features as PDF</h2>
+<p>For further inspection and documentation we can save plots for species of interest. We do not plot Blanks are they can easily have random concentrations when signals of feature and ISTDs are near or below LOD. The plots are saved in the <code>output</code> folder. Have a look and feel free to adjust how many plots are saved per page by setting <code>cols_page</code> and <code>rows_page</code>. Use <code>?runscatter</code> or press <code>F2</code> on the function name to see all available options.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_plot_runscatter</span>(</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp,</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">"conc"</span>,</span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="fu">c</span>(<span class="st">"BQC"</span>, <span class="st">"TQC"</span>, <span class="st">"SPL"</span>),</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">filt_include_features =</span>  <span class="cn">NA</span>,</span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">filt_exclude_features =</span> <span class="st">"ISTD"</span>,</span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">cap_outliers =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">log_scale =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_trend =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">save_pdf =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">"./output/runscatter_after-drift-batch-correction.pdf"</span>,</span>
+<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols_page =</span> <span class="dv">2</span>, </span>
+<span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">rows_page =</span> <span class="dv">2</span>,</span>
+<span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_progress =</span> <span class="cn">TRUE</span></span>
+<span id="cb68-15"><a href="#cb68-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="qc-based-feature-filtering" class="level2">
+<h2 class="anchored" data-anchor-id="qc-based-feature-filtering">QC-based feature filtering</h2>
+<p>As the last step in the processing we now apply a set of filters to exclude features that do not meet the specific QC criteria. The function <code>qc_apply_feature_filter()</code> allows to set the filters based on the data and metadata, press <code>TAB</code> after the open bracket after the function name of use <code>F1</code> or <code>?qc_apply_feature_filter</code> to see available filter criteria. The function can be run multiple times to explore the effect of different filters. &gt; Experiment with different filter set and filter criteria.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> <span class="fu">qc_apply_feature_filter</span>(</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp,</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_medians =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">qualifier.include =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">istd.include =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">response.curve.id =</span> <span class="dv">1</span>,</span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">response.rsquare.min =</span> <span class="fl">0.8</span>,</span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">response.yintersect.rel.max =</span> <span class="fl">0.6</span>,</span>
+<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">signalblank.median.pblk.min =</span> <span class="dv">10</span>,</span>
+<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">intensity.median.spl.min =</span> <span class="dv">100</span>,</span>
+<span id="cb69-12"><a href="#cb69-12" aria-hidden="true" tabindex="-1"></a>  <span class="co">#dratio.conc.tqc.mad.max = 0.5,</span></span>
+<span id="cb69-13"><a href="#cb69-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">cv.conc.bqc.max =</span> <span class="dv">25</span>,</span>
+<span id="cb69-14"><a href="#cb69-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">features_to_keep =</span> <span class="fu">c</span>(<span class="st">"CE 20:4"</span>, <span class="st">"CE 22:5"</span>, <span class="st">"CE 22:6"</span>, <span class="st">"CE 16:0"</span>, <span class="st">"CE 18:0"</span>)</span>
+<span id="cb69-15"><a href="#cb69-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Calculating feature QC metrics - please wait...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ 
+New QC filter criteria were defined: 330 of 424 quantifier features meet QC criteria (excluding the 25 quantifier ISTD features).</code></pre>
+</div>
+</div>
+</section>
+<section id="summary-of-the-qc-filtering" class="level2">
+<h2 class="anchored" data-anchor-id="summary-of-the-qc-filtering">Summary of the QC filtering</h2>
+<p>The plot belows provides an overview of the data quality and the feature filtering. The segments in green indicate the number of species that passed all previously defined qc filtering criteria. The rest are number of species that failed in the different filtering criteria. Note that criteria are hierarchically organized, i.e.&nbsp;feature is only classified as failing a criteria (e.g., CVA), when it has passed the hierarchically lower filters (e.g., S/B and LOD).</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>midar<span class="sc">::</span><span class="fu">qc_plot_summary_classes</span>(myexp, <span class="at">include_qualifier =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The following plot summarizes the feature filtering even more, depicting the total number of features that passed the filtering. Also here the classification is based on hierarchical application of filters, as mentioned before. The Venn diagram on the right shows the number of features that failed a particular filtering criteria.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>midar<span class="sc">::</span><span class="fu">qc_plot_summary</span>(myexp, <span class="at">include_qualifier =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Part2_Postprocessing_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="saving-a-report-with-data-metadata-and-processing-details" class="level2">
+<h2 class="anchored" data-anchor-id="saving-a-report-with-data-metadata-and-processing-details">Saving a report with data, metadata and processing details</h2>
+<p>With the function below we can save an EXCEL workbook with different sheets comprising raw and processed datasets, metadata and feature QC metrics. The report can be found in the <code>output</code> folder.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>midar<span class="sc">::</span><span class="fu">report_write_xlsx</span>(myexp, <span class="at">path =</span> <span class="st">"./output/myexp-midar_report.xlsx"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Saving report to disk - please wait...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ 
+The data processing report of analysis 'sPerfect' has been saved.</code></pre>
+</div>
+</div>
+<p>Additionally, data can be saved as flat wide CSV file. Check the function arguments to select and subset the data.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>midar<span class="sc">::</span><span class="fu">report_write_csv</span>(</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp, </span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">"./output/sperfect_filt_uM.csv"</span>,</span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">"conc"</span>, </span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="st">"SPL"</span>, </span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">include_qualifier =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_data =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>✔ Concentration values of 376 analyses and 330 features have been exported.</code></pre>
+</div>
+</div>
+</section>
+<section id="sharing-the-midarexperiment-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="sharing-the-midarexperiment-dataset">Sharing the <code>MidarExperiment</code> dataset</h2>
+<p>The <code>myexp</code> object can be saved as an RDS file and shared. RDS files serialized R variable/objects that can be opened in R even if <code>midar</code> is not installed. You use the imported <code>MidarExperiment</code> object for re-processing, plotting or inspection using the <code>midar</code> package. &gt; Below we save our experiment to the disk and re-open it again under a different name and check the status. <strong>TODO: use midar helper function to load the RDS file, asserting that the class is a <code>MidarExperiment</code> object.</strong></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(myexp, <span class="at">file =</span> <span class="st">"./output/myexp-midar.rds"</span>, <span class="at">compress =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>my_saved_exp <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="st">"./output/myexp-midar.rds"</span>)</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(myexp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── MidarExperiment ─────────────────────────────────────────────────────────────</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Title: sPerfect</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Processing status: Batch- and drift-corrected concentrations</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Annotated Raw Data ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Samples: 498</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Features: 503</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Metadata ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Sample annotation: ✔</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Feature annotation: ✔</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Internal standard annotation: ✔</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Response curve annotation: ✔</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Study samples annotation: ✖</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Processing Status ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Isotope corrected: ✔</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• ISTD normalized: ✔</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• ISTD quantitated: ✔</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Drift corrected: ✔</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Batch corrected: ✔</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Feature QC-filtered: ✔</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Exclusion of Analyses and Features ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• One or more analyses manually excluded: ✔</code></pre>
+</div>
+</div>
+</section>
+<section id="more-qc" class="level2">
+<h2 class="anchored" data-anchor-id="more-qc">More QC</h2>
+<p>Code for additional QC analyses will be added here before the start of the workshop.</p>
+<!-- -->
+
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb111" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "SLING Data Analysis Workshop"</span></span>
+<span id="cb111-3"><a href="#cb111-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "Part 2: Post-processing of integrated peak data"</span></span>
+<span id="cb111-4"><a href="#cb111-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Bo Burla"</span></span>
+<span id="cb111-5"><a href="#cb111-5" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb111-6"><a href="#cb111-6" aria-hidden="true" tabindex="-1"></a><span class="co">  echo: true</span></span>
+<span id="cb111-7"><a href="#cb111-7" aria-hidden="true" tabindex="-1"></a><span class="co">  eval: true</span></span>
+<span id="cb111-8"><a href="#cb111-8" aria-hidden="true" tabindex="-1"></a><span class="co">  include: true</span></span>
+<span id="cb111-9"><a href="#cb111-9" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> </span></span>
+<span id="cb111-10"><a href="#cb111-10" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb111-11"><a href="#cb111-11" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: true</span></span>
+<span id="cb111-12"><a href="#cb111-12" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb111-13"><a href="#cb111-13" aria-hidden="true" tabindex="-1"></a><span class="co">    code-copy: true</span></span>
+<span id="cb111-14"><a href="#cb111-14" aria-hidden="true" tabindex="-1"></a><span class="co">    page-layout: full</span></span>
+<span id="cb111-15"><a href="#cb111-15" aria-hidden="true" tabindex="-1"></a><span class="co">    fig-align: 'center'</span></span>
+<span id="cb111-16"><a href="#cb111-16" aria-hidden="true" tabindex="-1"></a><span class="an">editor:</span><span class="co"> visual</span></span>
+<span id="cb111-17"><a href="#cb111-17" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb111-18"><a href="#cb111-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-19"><a href="#cb111-19" aria-hidden="true" tabindex="-1"></a><span class="in">```{r init}</span></span>
+<span id="cb111-20"><a href="#cb111-20" aria-hidden="true" tabindex="-1"></a><span class="in">#| message: false</span></span>
+<span id="cb111-21"><a href="#cb111-21" aria-hidden="true" tabindex="-1"></a><span class="in">#| include: false</span></span>
+<span id="cb111-22"><a href="#cb111-22" aria-hidden="true" tabindex="-1"></a><span class="in"># Load R packages</span></span>
+<span id="cb111-23"><a href="#cb111-23" aria-hidden="true" tabindex="-1"></a><span class="in">  </span></span>
+<span id="cb111-24"><a href="#cb111-24" aria-hidden="true" tabindex="-1"></a><span class="in">library(midar)</span></span>
+<span id="cb111-25"><a href="#cb111-25" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-26"><a href="#cb111-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-27"><a href="#cb111-27" aria-hidden="true" tabindex="-1"></a><span class="fu">## Importing MRMkit results with integrated peak areas</span></span>
+<span id="cb111-28"><a href="#cb111-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-29"><a href="#cb111-29" aria-hidden="true" tabindex="-1"></a>We import the peak areas obtained from peak integration using <span class="in">`MRMkit`</span> in Part 1 of this workshop. This <span class="in">`MRMkit`</span> result file contains the peak areas of integrated peaks (features) in all processed raw data file. In addition, the <span class="in">`MRMkit`</span> result file reports peak retention times and widths, and metadata from the mzML files, i.e. the acquisition time-stamp and transition m/z values. We will import these metadata as well by setting <span class="in">`use_metadata = TRUE`</span>.</span>
+<span id="cb111-30"><a href="#cb111-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-31"><a href="#cb111-31" aria-hidden="true" tabindex="-1"></a><span class="in">```{r load-rawdata}</span></span>
+<span id="cb111-32"><a href="#cb111-32" aria-hidden="true" tabindex="-1"></a><span class="in">data_path &lt;- "./data/sPerfect_MRMkit-20240911.tsv"</span></span>
+<span id="cb111-33"><a href="#cb111-33" aria-hidden="true" tabindex="-1"></a><span class="in">metadata_path &lt;- "./data/sPerfect_Metadata_MidarTemplate-20241001_All.xlsm"</span></span>
+<span id="cb111-34"><a href="#cb111-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-35"><a href="#cb111-35" aria-hidden="true" tabindex="-1"></a><span class="in">myexp &lt;- midar::MidarExperiment(title = "sPerfect")</span></span>
+<span id="cb111-36"><a href="#cb111-36" aria-hidden="true" tabindex="-1"></a><span class="in">myexp &lt;- midar::data_import_mrmkit(myexp, path = data_path, use_metadata = TRUE)</span></span>
+<span id="cb111-37"><a href="#cb111-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-38"><a href="#cb111-38" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-39"><a href="#cb111-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-40"><a href="#cb111-40" aria-hidden="true" tabindex="-1"></a><span class="fu">## A glimpse on the imported MRMkit results</span></span>
+<span id="cb111-41"><a href="#cb111-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-42"><a href="#cb111-42" aria-hidden="true" tabindex="-1"></a>Let's have a look at the imported data be running code below or by running <span class="in">`View(myexp@dataset_orig)`</span> in the console. As we can see, the data is in the long format, allowing use to view multiple parameters for each analysis-feature pair.</span>
+<span id="cb111-43"><a href="#cb111-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-44"><a href="#cb111-44" aria-hidden="true" tabindex="-1"></a>Explore the different columns and use filter function in the RStudio table viewer.</span>
+<span id="cb111-45"><a href="#cb111-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-46"><a href="#cb111-46" aria-hidden="true" tabindex="-1"></a><span class="in">```{r view-rawdata-}</span></span>
+<span id="cb111-47"><a href="#cb111-47" aria-hidden="true" tabindex="-1"></a><span class="in">print(myexp@dataset_orig) # TODO: Replace by actual getter</span></span>
+<span id="cb111-48"><a href="#cb111-48" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-49"><a href="#cb111-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-50"><a href="#cb111-50" aria-hidden="true" tabindex="-1"></a><span class="fu">## Analytical design and timeline</span></span>
+<span id="cb111-51"><a href="#cb111-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-52"><a href="#cb111-52" aria-hidden="true" tabindex="-1"></a>Having an overview of the analysis design and timelines can be helpful for the next processing steps. The plot below shows the batch structure, the QC samples included with their positions, and some information on date, duration and run time of the analysis in the title. Use <span class="in">`show_timestamp = TRUE`</span> to show the analysis timestamps in the x axis. This can be helpful to see if there were interruptions during the analysis and when the different batches were analysed.</span>
+<span id="cb111-53"><a href="#cb111-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-56"><a href="#cb111-56" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-57"><a href="#cb111-57" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_plot_runsequence</span>(</span>
+<span id="cb111-58"><a href="#cb111-58" aria-hidden="true" tabindex="-1"></a>  myexp, </span>
+<span id="cb111-59"><a href="#cb111-59" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="cn">NA</span>, </span>
+<span id="cb111-60"><a href="#cb111-60" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_batches =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb111-61"><a href="#cb111-61" aria-hidden="true" tabindex="-1"></a>  <span class="at">batches_as_shades =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb111-62"><a href="#cb111-62" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_shading_color =</span> <span class="st">"#fffbdb"</span>, </span>
+<span id="cb111-63"><a href="#cb111-63" aria-hidden="true" tabindex="-1"></a>  <span class="at">segment_thickness =</span> <span class="fl">0.5</span>,</span>
+<span id="cb111-64"><a href="#cb111-64" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_timestamp =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb111-65"><a href="#cb111-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-66"><a href="#cb111-66" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-67"><a href="#cb111-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-68"><a href="#cb111-68" aria-hidden="true" tabindex="-1"></a><span class="fu">## Signal trends of Internal Standards</span></span>
+<span id="cb111-69"><a href="#cb111-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-70"><a href="#cb111-70" aria-hidden="true" tabindex="-1"></a>To have a first idea on how the analyses went, we can look at the Internal Standards in all samples across all 6 batches. Since the same ISTD amount was spiked into each sample (except SBLK) we should expect same intensities in all samples and sample types. What do you observe? You can set <span class="in">`save_pdf`</span> to TRUE to have a pdf from the plots (which will be in the <span class="in">`output`</span> folder).</span>
+<span id="cb111-71"><a href="#cb111-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-74"><a href="#cb111-74" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-75"><a href="#cb111-75" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: true</span></span>
+<span id="cb111-76"><a href="#cb111-76" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_plot_runscatter</span>(</span>
+<span id="cb111-77"><a href="#cb111-77" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp,</span>
+<span id="cb111-78"><a href="#cb111-78" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">"intensity"</span>,</span>
+<span id="cb111-79"><a href="#cb111-79" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="fu">c</span>(<span class="st">"BQC"</span>, <span class="st">"TQC"</span>, <span class="st">"SPL"</span>, <span class="st">"PBLK"</span>, <span class="st">"SBLK"</span>),</span>
+<span id="cb111-80"><a href="#cb111-80" aria-hidden="true" tabindex="-1"></a>  <span class="at">analysis_no_range =</span> <span class="cn">NA</span>, <span class="co">#get_batch_boundaries(myexp, c(1,6)), </span></span>
+<span id="cb111-81"><a href="#cb111-81" aria-hidden="true" tabindex="-1"></a>  <span class="at">filt_include_features =</span> <span class="st">"ISTD"</span>, </span>
+<span id="cb111-82"><a href="#cb111-82" aria-hidden="true" tabindex="-1"></a>  <span class="at">filt_exclude_features =</span> <span class="st">"Hex|282"</span>,</span>
+<span id="cb111-83"><a href="#cb111-83" aria-hidden="true" tabindex="-1"></a>  <span class="at">cap_outliers =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb111-84"><a href="#cb111-84" aria-hidden="true" tabindex="-1"></a>  <span class="at">log_scale =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb111-85"><a href="#cb111-85" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_batches =</span> <span class="cn">TRUE</span>,<span class="at">base_font_size =</span> <span class="dv">5</span>,</span>
+<span id="cb111-86"><a href="#cb111-86" aria-hidden="true" tabindex="-1"></a>  <span class="at">save_pdf =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb111-87"><a href="#cb111-87" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">"./output/runscatter_istd.pdf"</span>,</span>
+<span id="cb111-88"><a href="#cb111-88" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols_page =</span> <span class="dv">3</span>, <span class="at">rows_page =</span> <span class="dv">2</span></span>
+<span id="cb111-89"><a href="#cb111-89" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb111-90"><a href="#cb111-90" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-91"><a href="#cb111-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-92"><a href="#cb111-92" aria-hidden="true" tabindex="-1"></a><span class="fu">## Adding detailed metadata</span></span>
+<span id="cb111-93"><a href="#cb111-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-94"><a href="#cb111-94" aria-hidden="true" tabindex="-1"></a>For further processing we need additional metadata describing the samples and features. The MiDAR EXCEL template is an option to collect, organize and pre-validate analysis metadata. Open the XLSM file in the <span class="in">`data`</span> folder to explore the metadata structure.</span>
+<span id="cb111-95"><a href="#cb111-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-96"><a href="#cb111-96" aria-hidden="true" tabindex="-1"></a>Using below function we import metadata from this template. In case of errors in the metadata (e.g. duplicate or missing ID), the import will fail with an error message. A summary of identified or potential issues in the metadata will be shown in a table. Work through these warnings to check your metadata, or ignore the warnings and proceed using <span class="in">`ignore_warnings = TRUE`</span>.</span>
+<span id="cb111-97"><a href="#cb111-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-100"><a href="#cb111-100" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-101"><a href="#cb111-101" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">metadata_import_midarxlm</span>(myexp, <span class="at">path =</span> metadata_path, <span class="at">ignore_warnings =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb111-102"><a href="#cb111-102" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-103"><a href="#cb111-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-104"><a href="#cb111-104" aria-hidden="true" tabindex="-1"></a><span class="fu">## Overall trends and possible technical outlier</span></span>
+<span id="cb111-105"><a href="#cb111-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-106"><a href="#cb111-106" aria-hidden="true" tabindex="-1"></a>To examine overall technical trends and issues affecting the majority of analytes (features), the RLA (Relative Log Abundance) plot can useful (De Livera et al, Analytical Chemistry, 2015). In this plot all feature is normalized (by the median across or within-batch) and the plotted as a boxplot per sample. This plot can to identify potential pipetting errors, sample spillage, injection volume changes or overall instrument sensitivity changes.</span>
+<span id="cb111-107"><a href="#cb111-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-108"><a href="#cb111-108" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; First run the code below as it is. What do you observe? Then have a look at batch 6 only uncommenting the line #analysis_no_range.. What does this tell us? Identify the potential ... by setting </span><span class="in">`x_axis_variable = "analysis_id"`</span><span class="at">. Set the y axis limits manually </span><span class="in">`y_lim = c(-2,2)`</span><span class="at"> and show all analyses to see if there are other trends or fluctuations.</span></span>
+<span id="cb111-109"><a href="#cb111-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-112"><a href="#cb111-112" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-113"><a href="#cb111-113" aria-hidden="true" tabindex="-1"></a>midar<span class="sc">::</span><span class="fu">qc_plot_rla_boxplot</span>(</span>
+<span id="cb111-114"><a href="#cb111-114" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp,</span>
+<span id="cb111-115"><a href="#cb111-115" aria-hidden="true" tabindex="-1"></a>  <span class="at">rla_type_batch =</span> <span class="fu">c</span>(<span class="st">"within"</span>),</span>
+<span id="cb111-116"><a href="#cb111-116" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">"intensity"</span>,</span>
+<span id="cb111-117"><a href="#cb111-117" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="fu">c</span>(<span class="st">"BQC"</span>, <span class="st">"SPL"</span>, <span class="st">"RQC"</span>, <span class="st">"TQC"</span>, <span class="st">"PBLK"</span>), </span>
+<span id="cb111-118"><a href="#cb111-118" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_data =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb111-119"><a href="#cb111-119" aria-hidden="true" tabindex="-1"></a>  <span class="co">#analysis_no_range = get_batch_boundaries(myexp, batch_ids = c(6,6)), </span></span>
+<span id="cb111-120"><a href="#cb111-120" aria-hidden="true" tabindex="-1"></a>  <span class="co">#y_lim = c(-3,3),</span></span>
+<span id="cb111-121"><a href="#cb111-121" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_axis_variable =</span> <span class="st">"run_seq_num"</span>,</span>
+<span id="cb111-122"><a href="#cb111-122" aria-hidden="true" tabindex="-1"></a>  <span class="at">ignore_outliers =</span> <span class="cn">FALSE</span>, <span class="at">x_gridlines =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb111-123"><a href="#cb111-123" aria-hidden="true" tabindex="-1"></a>  <span class="at">batches_as_shades =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb111-124"><a href="#cb111-124" aria-hidden="true" tabindex="-1"></a>  <span class="at">linewidth =</span> <span class="fl">0.1</span></span>
+<span id="cb111-125"><a href="#cb111-125" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb111-126"><a href="#cb111-126" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-127"><a href="#cb111-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-128"><a href="#cb111-128" aria-hidden="true" tabindex="-1"></a><span class="fu">## PCA plot of all QC types</span></span>
+<span id="cb111-129"><a href="#cb111-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-130"><a href="#cb111-130" aria-hidden="true" tabindex="-1"></a>This is plot is an other way to obtain an overview of the study and QC samples and to identify potential issues in the data.</span>
+<span id="cb111-131"><a href="#cb111-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-132"><a href="#cb111-132" aria-hidden="true" tabindex="-1"></a>| Explore other PCA dimension and try adding blanks (i.e. PBLK) to the plot, by adding <span class="in">`"PBLK"`</span> to <span class="in">`qc_types`</span> below.</span>
+<span id="cb111-133"><a href="#cb111-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-136"><a href="#cb111-136" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-137"><a href="#cb111-137" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_plot_pca</span>(</span>
+<span id="cb111-138"><a href="#cb111-138" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp, </span>
+<span id="cb111-139"><a href="#cb111-139" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">"feature_intensity"</span>, </span>
+<span id="cb111-140"><a href="#cb111-140" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_data =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb111-141"><a href="#cb111-141" aria-hidden="true" tabindex="-1"></a>  <span class="at">pca_dim =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),</span>
+<span id="cb111-142"><a href="#cb111-142" aria-hidden="true" tabindex="-1"></a>  <span class="at">label_k_mad =</span> <span class="dv">3</span>, </span>
+<span id="cb111-143"><a href="#cb111-143" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="fu">c</span>(<span class="st">"SPL"</span>, <span class="st">"BQC"</span>, <span class="st">"NIST"</span>, <span class="st">"TQC"</span>),</span>
+<span id="cb111-144"><a href="#cb111-144" aria-hidden="true" tabindex="-1"></a>  <span class="at">log_transform =</span> <span class="cn">TRUE</span>,  </span>
+<span id="cb111-145"><a href="#cb111-145" aria-hidden="true" tabindex="-1"></a>  <span class="at">point_size =</span> <span class="dv">2</span>, <span class="at">point_alpha =</span> <span class="fl">0.7</span>, <span class="at">font_base_size =</span> <span class="dv">8</span>, <span class="at">ellipse_alpha =</span> <span class="fl">0.3</span>, </span>
+<span id="cb111-146"><a href="#cb111-146" aria-hidden="true" tabindex="-1"></a>  <span class="at">remove_istds =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb111-147"><a href="#cb111-147" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-148"><a href="#cb111-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-149"><a href="#cb111-149" aria-hidden="true" tabindex="-1"></a><span class="fu">## Exclude technical outliers</span></span>
+<span id="cb111-150"><a href="#cb111-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-151"><a href="#cb111-151" aria-hidden="true" tabindex="-1"></a>We classified a technical outlier and decide to remove it from all downstream processing, using <span class="in">`data_exclude_analyses()`</span>. What do we now observe in the new PCA plot?</span>
+<span id="cb111-152"><a href="#cb111-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-155"><a href="#cb111-155" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-156"><a href="#cb111-156" aria-hidden="true" tabindex="-1"></a> <span class="co"># Exclude the sample from the processing</span></span>
+<span id="cb111-157"><a href="#cb111-157" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> <span class="fu">data_exclude_analyses</span>(myexp, <span class="at">analyses_exlude =</span> <span class="fu">c</span>(<span class="st">"Longit_batch6_51"</span>), <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb111-158"><a href="#cb111-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-159"><a href="#cb111-159" aria-hidden="true" tabindex="-1"></a><span class="co"># Replot the PCA</span></span>
+<span id="cb111-160"><a href="#cb111-160" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_plot_pca</span>(</span>
+<span id="cb111-161"><a href="#cb111-161" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp, </span>
+<span id="cb111-162"><a href="#cb111-162" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">"feature_intensity"</span>, </span>
+<span id="cb111-163"><a href="#cb111-163" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_data =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb111-164"><a href="#cb111-164" aria-hidden="true" tabindex="-1"></a>  <span class="at">pca_dim =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),</span>
+<span id="cb111-165"><a href="#cb111-165" aria-hidden="true" tabindex="-1"></a>  <span class="at">label_k_mad =</span> <span class="dv">3</span>, </span>
+<span id="cb111-166"><a href="#cb111-166" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="fu">c</span>(<span class="st">"SPL"</span>, <span class="st">"BQC"</span>, <span class="st">"NIST"</span>, <span class="st">"TQC"</span>),</span>
+<span id="cb111-167"><a href="#cb111-167" aria-hidden="true" tabindex="-1"></a>  <span class="at">log_transform =</span> <span class="cn">TRUE</span>,  </span>
+<span id="cb111-168"><a href="#cb111-168" aria-hidden="true" tabindex="-1"></a>  <span class="at">point_size =</span> <span class="dv">2</span>, <span class="at">point_alpha =</span> <span class="fl">0.7</span>, <span class="at">font_base_size =</span> <span class="dv">8</span>, <span class="at">ellipse_alpha =</span> <span class="fl">0.3</span>, </span>
+<span id="cb111-169"><a href="#cb111-169" aria-hidden="true" tabindex="-1"></a>  <span class="at">remove_istds =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb111-170"><a href="#cb111-170" aria-hidden="true" tabindex="-1"></a>  <span class="at">hide_label_text =</span> <span class="cn">NA</span>)</span>
+<span id="cb111-171"><a href="#cb111-171" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-172"><a href="#cb111-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-173"><a href="#cb111-173" aria-hidden="true" tabindex="-1"></a><span class="fu">## Response curves</span></span>
+<span id="cb111-174"><a href="#cb111-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-177"><a href="#cb111-177" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-178"><a href="#cb111-178" aria-hidden="true" tabindex="-1"></a><span class="co"># Exclude very low abundant features</span></span>
+<span id="cb111-179"><a href="#cb111-179" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">qc_apply_feature_filter</span>(myexp, <span class="at">intensity.median.spl.min =</span> <span class="dv">200</span>)</span>
+<span id="cb111-180"><a href="#cb111-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-181"><a href="#cb111-181" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_plot_responsecurves</span>(</span>
+<span id="cb111-182"><a href="#cb111-182" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp, </span>
+<span id="cb111-183"><a href="#cb111-183" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">"intensity"</span>, </span>
+<span id="cb111-184"><a href="#cb111-184" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_data =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb111-185"><a href="#cb111-185" aria-hidden="true" tabindex="-1"></a>  <span class="at">feature_incl_filt =</span> <span class="st">"PC 3[2-9]"</span>, </span>
+<span id="cb111-186"><a href="#cb111-186" aria-hidden="true" tabindex="-1"></a>  <span class="at">save_pdf =</span> <span class="cn">FALSE</span>, <span class="at">cols_page =</span> <span class="dv">5</span>, </span>
+<span id="cb111-187"><a href="#cb111-187" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb111-188"><a href="#cb111-188" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-189"><a href="#cb111-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-190"><a href="#cb111-190" aria-hidden="true" tabindex="-1"></a><span class="fu">## </span></span>
+<span id="cb111-191"><a href="#cb111-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-192"><a href="#cb111-192" aria-hidden="true" tabindex="-1"></a><span class="fu">## Isotope interference correction</span></span>
+<span id="cb111-193"><a href="#cb111-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-194"><a href="#cb111-194" aria-hidden="true" tabindex="-1"></a>As shown in the course presentation, we have a few cases where peaks were co-integrated with the interfering isotope peaks of other lipid species. We can subtract these intereferences from the raw intensities (areas) with below function, which uses information in the metadata.</span>
+<span id="cb111-195"><a href="#cb111-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-198"><a href="#cb111-198" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-199"><a href="#cb111-199" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">correct_interferences</span>(myexp)</span>
+<span id="cb111-200"><a href="#cb111-200" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-201"><a href="#cb111-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-202"><a href="#cb111-202" aria-hidden="true" tabindex="-1"></a><span class="fu">## Normalization and quantification based on ISTDs</span></span>
+<span id="cb111-203"><a href="#cb111-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-206"><a href="#cb111-206" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-207"><a href="#cb111-207" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">calc_normalize_by_istd</span>(myexp)</span>
+<span id="cb111-208"><a href="#cb111-208" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">calc_quant_by_istd</span>(myexp)</span>
+<span id="cb111-209"><a href="#cb111-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-210"><a href="#cb111-210" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-211"><a href="#cb111-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-212"><a href="#cb111-212" aria-hidden="true" tabindex="-1"></a><span class="fu">## Examine the effects of class-wide ISTD normalization</span></span>
+<span id="cb111-213"><a href="#cb111-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-214"><a href="#cb111-214" aria-hidden="true" tabindex="-1"></a>Class-specific ISTDs are common in lipidomics. However, normalization with internal standards can lead to artefacts and increase the data variability rather than reduce technical variability.</span>
+<span id="cb111-215"><a href="#cb111-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-216"><a href="#cb111-216" aria-hidden="true" tabindex="-1"></a>| What do we observe below? What could be the reasons?</span>
+<span id="cb111-217"><a href="#cb111-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-220"><a href="#cb111-220" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-221"><a href="#cb111-221" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">qc_apply_feature_filter</span>(myexp, <span class="at">intensity.median.spl.min =</span> <span class="dv">1000</span>, <span class="at">overwrite =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb111-222"><a href="#cb111-222" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_plot_normalization_cv</span>(</span>
+<span id="cb111-223"><a href="#cb111-223" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp, </span>
+<span id="cb111-224"><a href="#cb111-224" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_data =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb111-225"><a href="#cb111-225" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_type =</span> <span class="st">"SPL"</span>, </span>
+<span id="cb111-226"><a href="#cb111-226" aria-hidden="true" tabindex="-1"></a>  <span class="at">var_before =</span> <span class="st">"intensity"</span>, </span>
+<span id="cb111-227"><a href="#cb111-227" aria-hidden="true" tabindex="-1"></a>  <span class="at">var_after =</span> <span class="st">"norm_intensity"</span>)</span>
+<span id="cb111-228"><a href="#cb111-228" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-229"><a href="#cb111-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-230"><a href="#cb111-230" aria-hidden="true" tabindex="-1"></a><span class="fu">## Drift correction</span></span>
+<span id="cb111-231"><a href="#cb111-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-232"><a href="#cb111-232" aria-hidden="true" tabindex="-1"></a>We will be using a Gaussian kernel smoothing based on the study sample to correct for within-batch drifts in the concentration data. The summary provided by this function is not meant to reflect real diagostics of the fit, but rather to understand if the fit caused any artefacts. Beside smoothing the trend, there is also an option to scale along the fit by setting <span class="in">`scale_smooth = TRUE`</span>.</span>
+<span id="cb111-233"><a href="#cb111-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-236"><a href="#cb111-236" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-237"><a href="#cb111-237" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">correct_drift_gaussiankernel</span>(</span>
+<span id="cb111-238"><a href="#cb111-238" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp,</span>
+<span id="cb111-239"><a href="#cb111-239" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="fu">c</span>(<span class="st">"SPL"</span>),</span>
+<span id="cb111-240"><a href="#cb111-240" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_wise =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb111-241"><a href="#cb111-241" aria-hidden="true" tabindex="-1"></a>  <span class="at">kernel_size =</span> <span class="dv">10</span>,</span>
+<span id="cb111-242"><a href="#cb111-242" aria-hidden="true" tabindex="-1"></a>  <span class="at">outlier_filter =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb111-243"><a href="#cb111-243" aria-hidden="true" tabindex="-1"></a>  <span class="at">outlier_ksd =</span> <span class="dv">5</span>,</span>
+<span id="cb111-244"><a href="#cb111-244" aria-hidden="true" tabindex="-1"></a>  <span class="at">location_smooth =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb111-245"><a href="#cb111-245" aria-hidden="true" tabindex="-1"></a>  <span class="at">scale_smooth =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb111-246"><a href="#cb111-246" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_progress =</span> <span class="cn">TRUE</span>  <span class="co"># set to FALSE when rendering</span></span>
+<span id="cb111-247"><a href="#cb111-247" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb111-248"><a href="#cb111-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-249"><a href="#cb111-249" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-250"><a href="#cb111-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-251"><a href="#cb111-251" aria-hidden="true" tabindex="-1"></a>To illustrate the correction we will plot an example (PC 40:8) before after the drift and batch correction. Since we use the same plot several tomes, we first create a function wrapping the plot functionaly more easily.</span>
+<span id="cb111-252"><a href="#cb111-252" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-255"><a href="#cb111-255" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-256"><a href="#cb111-256" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a wrapper function</span></span>
+<span id="cb111-257"><a href="#cb111-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-258"><a href="#cb111-258" aria-hidden="true" tabindex="-1"></a>my_trend_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(variable, feature){</span>
+<span id="cb111-259"><a href="#cb111-259" aria-hidden="true" tabindex="-1"></a>  <span class="fu">qc_plot_runscatter</span>(</span>
+<span id="cb111-260"><a href="#cb111-260" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> myexp,</span>
+<span id="cb111-261"><a href="#cb111-261" aria-hidden="true" tabindex="-1"></a>    <span class="at">variable =</span> variable,</span>
+<span id="cb111-262"><a href="#cb111-262" aria-hidden="true" tabindex="-1"></a>    <span class="at">qc_types =</span> <span class="fu">c</span>(<span class="st">"BQC"</span>, <span class="st">"TQC"</span>, <span class="st">"SPL"</span>),</span>
+<span id="cb111-263"><a href="#cb111-263" aria-hidden="true" tabindex="-1"></a>    <span class="at">filt_include_features =</span> feature,</span>
+<span id="cb111-264"><a href="#cb111-264" aria-hidden="true" tabindex="-1"></a>    <span class="at">filt_exclude_features =</span> <span class="st">"ISTD"</span>,</span>
+<span id="cb111-265"><a href="#cb111-265" aria-hidden="true" tabindex="-1"></a>    <span class="at">cap_outliers =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb111-266"><a href="#cb111-266" aria-hidden="true" tabindex="-1"></a>    <span class="at">log_scale =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb111-267"><a href="#cb111-267" aria-hidden="true" tabindex="-1"></a>    <span class="at">show_trend =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb111-268"><a href="#cb111-268" aria-hidden="true" tabindex="-1"></a>    <span class="at">save_pdf =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb111-269"><a href="#cb111-269" aria-hidden="true" tabindex="-1"></a>    <span class="at">path =</span> <span class="st">"./output/runscatter_PC408_beforecorr.pdf"</span>,</span>
+<span id="cb111-270"><a href="#cb111-270" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols_page =</span> <span class="dv">1</span>, <span class="at">rows_page =</span> <span class="dv">1</span>, </span>
+<span id="cb111-271"><a href="#cb111-271" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb111-272"><a href="#cb111-272" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb111-273"><a href="#cb111-273" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-274"><a href="#cb111-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-275"><a href="#cb111-275" aria-hidden="true" tabindex="-1"></a>Let's use this before defined function to plot the trends of one selected example before and after within-batch smoothing. What do we observe?</span>
+<span id="cb111-276"><a href="#cb111-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-279"><a href="#cb111-279" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-280"><a href="#cb111-280" aria-hidden="true" tabindex="-1"></a><span class="fu">my_trend_plot</span>(<span class="st">"conc_raw"</span>, <span class="st">"PC 40:8"</span>)</span>
+<span id="cb111-281"><a href="#cb111-281" aria-hidden="true" tabindex="-1"></a><span class="fu">my_trend_plot</span>(<span class="st">"conc"</span>, <span class="st">"PC 40:8"</span>)</span>
+<span id="cb111-282"><a href="#cb111-282" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-283"><a href="#cb111-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-284"><a href="#cb111-284" aria-hidden="true" tabindex="-1"></a><span class="fu">## Batch-effect correction</span></span>
+<span id="cb111-285"><a href="#cb111-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-286"><a href="#cb111-286" aria-hidden="true" tabindex="-1"></a>As we observed the trend lines of the different batches are not aligned. We will use <span class="in">`correct_batcheffects()`</span> to correct for median center (location) and scale differences between the batches. The define that the correction should be based on the study samples medians. An optinal scale correction can be performed by setting <span class="in">`correct_scale = FALSE`</span>. After the correction we directly plot our example lipid species again. What do you observe now?</span>
+<span id="cb111-287"><a href="#cb111-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-290"><a href="#cb111-290" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-291"><a href="#cb111-291" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">correct_batcheffects</span>(</span>
+<span id="cb111-292"><a href="#cb111-292" aria-hidden="true" tabindex="-1"></a>  myexp, </span>
+<span id="cb111-293"><a href="#cb111-293" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="st">"SPL"</span>, <span class="at">overwrite =</span> T,</span>
+<span id="cb111-294"><a href="#cb111-294" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct_location =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb111-295"><a href="#cb111-295" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct_scale =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb111-296"><a href="#cb111-296" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-297"><a href="#cb111-297" aria-hidden="true" tabindex="-1"></a><span class="fu">my_trend_plot</span>(<span class="st">"conc"</span>, <span class="st">"PC 40:8"</span>)</span>
+<span id="cb111-298"><a href="#cb111-298" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-299"><a href="#cb111-299" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> midar<span class="sc">::</span><span class="fu">correct_batcheffects</span>(</span>
+<span id="cb111-300"><a href="#cb111-300" aria-hidden="true" tabindex="-1"></a>  myexp, </span>
+<span id="cb111-301"><a href="#cb111-301" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="st">"SPL"</span>, <span class="at">overwrite =</span> T,</span>
+<span id="cb111-302"><a href="#cb111-302" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct_location =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb111-303"><a href="#cb111-303" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct_scale =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb111-304"><a href="#cb111-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-305"><a href="#cb111-305" aria-hidden="true" tabindex="-1"></a><span class="fu">my_trend_plot</span>(<span class="st">"conc"</span>, <span class="st">"PC 40:8"</span>)</span>
+<span id="cb111-306"><a href="#cb111-306" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-307"><a href="#cb111-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-308"><a href="#cb111-308" aria-hidden="true" tabindex="-1"></a><span class="fu">## Saving *runscatter* plots of all features as PDF</span></span>
+<span id="cb111-309"><a href="#cb111-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-310"><a href="#cb111-310" aria-hidden="true" tabindex="-1"></a>For further inspection and documentation we can save plots for species of interest. We do not plot Blanks are they can easily have random concentrations when signals of feature and ISTDs are near or below LOD. The plots are saved in the <span class="in">`output`</span> folder. Have a look and feel free to adjust how many plots are saved per page by setting <span class="in">`cols_page`</span> and <span class="in">`rows_page`</span>. Use <span class="in">`?runscatter`</span> or press <span class="in">`F2`</span> on the function name to see all available options.</span>
+<span id="cb111-311"><a href="#cb111-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-314"><a href="#cb111-314" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-315"><a href="#cb111-315" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb111-316"><a href="#cb111-316" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_plot_runscatter</span>(</span>
+<span id="cb111-317"><a href="#cb111-317" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp,</span>
+<span id="cb111-318"><a href="#cb111-318" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">"conc"</span>,</span>
+<span id="cb111-319"><a href="#cb111-319" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="fu">c</span>(<span class="st">"BQC"</span>, <span class="st">"TQC"</span>, <span class="st">"SPL"</span>),</span>
+<span id="cb111-320"><a href="#cb111-320" aria-hidden="true" tabindex="-1"></a>  <span class="at">filt_include_features =</span>  <span class="cn">NA</span>,</span>
+<span id="cb111-321"><a href="#cb111-321" aria-hidden="true" tabindex="-1"></a>  <span class="at">filt_exclude_features =</span> <span class="st">"ISTD"</span>,</span>
+<span id="cb111-322"><a href="#cb111-322" aria-hidden="true" tabindex="-1"></a>  <span class="at">cap_outliers =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb111-323"><a href="#cb111-323" aria-hidden="true" tabindex="-1"></a>  <span class="at">log_scale =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb111-324"><a href="#cb111-324" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_trend =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb111-325"><a href="#cb111-325" aria-hidden="true" tabindex="-1"></a>  <span class="at">save_pdf =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb111-326"><a href="#cb111-326" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">"./output/runscatter_after-drift-batch-correction.pdf"</span>,</span>
+<span id="cb111-327"><a href="#cb111-327" aria-hidden="true" tabindex="-1"></a>  <span class="at">cols_page =</span> <span class="dv">2</span>, </span>
+<span id="cb111-328"><a href="#cb111-328" aria-hidden="true" tabindex="-1"></a>  <span class="at">rows_page =</span> <span class="dv">2</span>,</span>
+<span id="cb111-329"><a href="#cb111-329" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_progress =</span> <span class="cn">TRUE</span></span>
+<span id="cb111-330"><a href="#cb111-330" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb111-331"><a href="#cb111-331" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-332"><a href="#cb111-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-333"><a href="#cb111-333" aria-hidden="true" tabindex="-1"></a><span class="fu">## QC-based feature filtering</span></span>
+<span id="cb111-334"><a href="#cb111-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-335"><a href="#cb111-335" aria-hidden="true" tabindex="-1"></a>As the last step in the processing we now apply a set of filters to exclude features that do not meet the specific QC criteria. The function <span class="in">`qc_apply_feature_filter()`</span> allows to set the filters based on the data and metadata, press <span class="in">`TAB`</span> after the open bracket after the function name of use <span class="in">`F1`</span> or <span class="in">`?qc_apply_feature_filter`</span> to see available filter criteria. The function can be run multiple times to explore the effect of different filters. <span class="sc">\&gt;</span> Experiment with different filter set and filter criteria.</span>
+<span id="cb111-336"><a href="#cb111-336" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-339"><a href="#cb111-339" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-340"><a href="#cb111-340" aria-hidden="true" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> <span class="fu">qc_apply_feature_filter</span>(</span>
+<span id="cb111-341"><a href="#cb111-341" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp,</span>
+<span id="cb111-342"><a href="#cb111-342" aria-hidden="true" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb111-343"><a href="#cb111-343" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_medians =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb111-344"><a href="#cb111-344" aria-hidden="true" tabindex="-1"></a>  <span class="at">qualifier.include =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb111-345"><a href="#cb111-345" aria-hidden="true" tabindex="-1"></a>  <span class="at">istd.include =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb111-346"><a href="#cb111-346" aria-hidden="true" tabindex="-1"></a>  <span class="at">response.curve.id =</span> <span class="dv">1</span>,</span>
+<span id="cb111-347"><a href="#cb111-347" aria-hidden="true" tabindex="-1"></a>  <span class="at">response.rsquare.min =</span> <span class="fl">0.8</span>,</span>
+<span id="cb111-348"><a href="#cb111-348" aria-hidden="true" tabindex="-1"></a>  <span class="at">response.yintersect.rel.max =</span> <span class="fl">0.6</span>,</span>
+<span id="cb111-349"><a href="#cb111-349" aria-hidden="true" tabindex="-1"></a>  <span class="at">signalblank.median.pblk.min =</span> <span class="dv">10</span>,</span>
+<span id="cb111-350"><a href="#cb111-350" aria-hidden="true" tabindex="-1"></a>  <span class="at">intensity.median.spl.min =</span> <span class="dv">100</span>,</span>
+<span id="cb111-351"><a href="#cb111-351" aria-hidden="true" tabindex="-1"></a>  <span class="co">#dratio.conc.tqc.mad.max = 0.5,</span></span>
+<span id="cb111-352"><a href="#cb111-352" aria-hidden="true" tabindex="-1"></a>  <span class="at">cv.conc.bqc.max =</span> <span class="dv">25</span>,</span>
+<span id="cb111-353"><a href="#cb111-353" aria-hidden="true" tabindex="-1"></a>  <span class="at">features_to_keep =</span> <span class="fu">c</span>(<span class="st">"CE 20:4"</span>, <span class="st">"CE 22:5"</span>, <span class="st">"CE 22:6"</span>, <span class="st">"CE 16:0"</span>, <span class="st">"CE 18:0"</span>)</span>
+<span id="cb111-354"><a href="#cb111-354" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb111-355"><a href="#cb111-355" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-356"><a href="#cb111-356" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-357"><a href="#cb111-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-358"><a href="#cb111-358" aria-hidden="true" tabindex="-1"></a><span class="fu">## Summary of the QC filtering</span></span>
+<span id="cb111-359"><a href="#cb111-359" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-360"><a href="#cb111-360" aria-hidden="true" tabindex="-1"></a>The plot belows provides an overview of the data quality and the feature filtering. The segments in green indicate the number of species that passed all previously defined qc filtering criteria. The rest are number of species that failed in the different filtering criteria. Note that criteria are hierarchically organized, i.e. feature is only classified as failing a criteria (e.g., CVA), when it has passed the hierarchically lower filters (e.g., S/B and LOD).</span>
+<span id="cb111-361"><a href="#cb111-361" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-364"><a href="#cb111-364" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-365"><a href="#cb111-365" aria-hidden="true" tabindex="-1"></a>midar<span class="sc">::</span><span class="fu">qc_plot_summary_classes</span>(myexp, <span class="at">include_qualifier =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb111-366"><a href="#cb111-366" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-367"><a href="#cb111-367" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-368"><a href="#cb111-368" aria-hidden="true" tabindex="-1"></a>The following plot summarizes the feature filtering even more, depicting the total number of features that passed the filtering. Also here the classification is based on hierarchical application of filters, as mentioned before. The Venn diagram on the right shows the number of features that failed a particular filtering criteria.</span>
+<span id="cb111-369"><a href="#cb111-369" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-372"><a href="#cb111-372" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-373"><a href="#cb111-373" aria-hidden="true" tabindex="-1"></a>midar<span class="sc">::</span><span class="fu">qc_plot_summary</span>(myexp, <span class="at">include_qualifier =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb111-374"><a href="#cb111-374" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-375"><a href="#cb111-375" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-376"><a href="#cb111-376" aria-hidden="true" tabindex="-1"></a><span class="fu">## Saving a report with data, metadata and processing details</span></span>
+<span id="cb111-377"><a href="#cb111-377" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-378"><a href="#cb111-378" aria-hidden="true" tabindex="-1"></a>With the function below we can save an EXCEL workbook with different sheets comprising raw and processed datasets, metadata and feature QC metrics. The report can be found in the <span class="in">`output`</span> folder.</span>
+<span id="cb111-379"><a href="#cb111-379" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-382"><a href="#cb111-382" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-383"><a href="#cb111-383" aria-hidden="true" tabindex="-1"></a>midar<span class="sc">::</span><span class="fu">report_write_xlsx</span>(myexp, <span class="at">path =</span> <span class="st">"./output/myexp-midar_report.xlsx"</span>)</span>
+<span id="cb111-384"><a href="#cb111-384" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-385"><a href="#cb111-385" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-386"><a href="#cb111-386" aria-hidden="true" tabindex="-1"></a>Additionally, data can be saved as flat wide CSV file. Check the function arguments to select and subset the data.</span>
+<span id="cb111-387"><a href="#cb111-387" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-390"><a href="#cb111-390" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-391"><a href="#cb111-391" aria-hidden="true" tabindex="-1"></a>midar<span class="sc">::</span><span class="fu">report_write_csv</span>(</span>
+<span id="cb111-392"><a href="#cb111-392" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> myexp, </span>
+<span id="cb111-393"><a href="#cb111-393" aria-hidden="true" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">"./output/sperfect_filt_uM.csv"</span>,</span>
+<span id="cb111-394"><a href="#cb111-394" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">"conc"</span>, </span>
+<span id="cb111-395"><a href="#cb111-395" aria-hidden="true" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="st">"SPL"</span>, </span>
+<span id="cb111-396"><a href="#cb111-396" aria-hidden="true" tabindex="-1"></a>  <span class="at">include_qualifier =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb111-397"><a href="#cb111-397" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_data =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb111-398"><a href="#cb111-398" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-399"><a href="#cb111-399" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-400"><a href="#cb111-400" aria-hidden="true" tabindex="-1"></a><span class="fu">## Sharing the `MidarExperiment` dataset</span></span>
+<span id="cb111-401"><a href="#cb111-401" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-402"><a href="#cb111-402" aria-hidden="true" tabindex="-1"></a>The <span class="in">`myexp`</span> object can be saved as an RDS file and shared. RDS files serialized R variable/objects that can be opened in R even if <span class="in">`midar`</span> is not installed. You use the imported <span class="in">`MidarExperiment`</span> object for re-processing, plotting or inspection using the <span class="in">`midar`</span> package. <span class="sc">\&gt;</span> Below we save our experiment to the disk and re-open it again under a different name and check the status. **TODO: use midar helper function to load the RDS file, asserting that the class is a `MidarExperiment` object.**</span>
+<span id="cb111-403"><a href="#cb111-403" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-406"><a href="#cb111-406" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb111-407"><a href="#cb111-407" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(myexp, <span class="at">file =</span> <span class="st">"./output/myexp-midar.rds"</span>, <span class="at">compress =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb111-408"><a href="#cb111-408" aria-hidden="true" tabindex="-1"></a>my_saved_exp <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="st">"./output/myexp-midar.rds"</span>)</span>
+<span id="cb111-409"><a href="#cb111-409" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(myexp)</span>
+<span id="cb111-410"><a href="#cb111-410" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb111-411"><a href="#cb111-411" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-412"><a href="#cb111-412" aria-hidden="true" tabindex="-1"></a><span class="fu">## More QC</span></span>
+<span id="cb111-413"><a href="#cb111-413" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-414"><a href="#cb111-414" aria-hidden="true" tabindex="-1"></a>Code for additional QC analyses will be added here before the start of the workshop.</span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
