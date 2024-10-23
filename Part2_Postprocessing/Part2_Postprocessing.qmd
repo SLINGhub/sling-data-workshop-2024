@@ -59,7 +59,7 @@ print(myexp@dataset_orig) # Better use `get_rawdata(mexp, "original")`
 
 ## 3. Analytical design and timeline
 
-An overview of the analysis design and timelines can provide valuable insight for subsequent processing steps. The plot below illustrates the batch structure, the quality control (QC) samples included with their respective positions, and additional information regarding the date, duration, and run time of the analysis.
+An overview of the analysis design and timelines can provide useful information for subsequent processing steps. The plot below illustrates the batch structure, the quality control (QC) samples included with their respective positions, and additional information regarding the date, duration, and run time of the analysis.
 
 > Show analysis timestamps with `show_timestamp = TRUE`. Have there been long interruptions within and between the batches?
 
@@ -77,9 +77,9 @@ qc_plot_runsequence(
 
 ## 4. Signal trends of Internal Standards
 
-We can look at the internal standards in all samples across all six batches to see how the analyses went. The same ISTD amount was spiked into each sample (except `SBLK`) so we should expect the same intensities in all samples and sample types.
+We can look at the internal standards (ISTDs) in all samples across all six batches to see how the analyses went. The same ISTD amount was spiked into each sample (except `SBLK`) so we should expect the same intensities in all samples and sample types.
 
-| What do you observe? You can set `save_pdf = TRUE` to save the plots as pdf (see subfolder `output`).
+| What do you observe? You can set `save_pdf = TRUE` to save the plots as PDF (see subfolder `output`).
 
 ```{r runscatter}
 #| message: true
@@ -101,9 +101,9 @@ qc_plot_runscatter(
 
 ## 5. Adding detailed metadata
 
-To proceed with further processing, we require additional metadata describing the samples and features. The `MiDAR Excel template` provides a solution for the collection, organisation and pre-validation of analysis metadata. Import metadata from this template using the function below. If there are errors in the metadata (e.g. duplicate or missing ID), the import will fail with an error message and summary of the errors. If the metadata is error-free, a summary of warnings and comments about the metadata will be shown in a table, if present. Check your metadata by working through these warnings, or proceed using `ignore_warnings = TRUE`.
+To proceed with further processing, we require additional metadata describing the samples and features. The `MiDAR Excel template` provides a solution for the collection, organisation and pre-validation of analysis metadata. Import metadata from this template using the function below. If there are errors in the metadata (e.g. duplicate or missing ID), the import will fail with an error message and summary of the errors. If the metadata is error-free, a summary of warnings and notes about the metadata will be shown in a table, if present. Check your metadata by working through these warnings, or proceed using `ignore_warnings = TRUE`.
 
-> Open the `XLSM` file in the `data` subfolder to explore the metadata structure (click 'Disable Macros').
+> Open the `XLSM` file in the `data` folder to explore the metadata structure (click 'Disable Macros').
 
 ```{r import-metadat}
 myexp <- midar::metadata_import_midarxlm(myexp, path = metadata_path, ignore_warnings = TRUE)
@@ -111,9 +111,9 @@ myexp <- midar::metadata_import_midarxlm(myexp, path = metadata_path, ignore_war
 
 ## 6. Overall trends and possible technical outlier
 
-To examine overall technical trends and issues affecting the majority of analytes (features), the RLA (Relative Log Abundance) plot is a useful tool (De Livera et al., Analytical Chemistry, 2015). In this plot, all features are normalised (by across or within-batch medians) and plotted as a boxplot per sample. This plot can identify potential pipetting errors, sample spillage, injection volume changes or overall instrument sensitivity changes.
+To examine overall technical trends and issues affecting the majority of analytes (features), the RLA (Relative Log Abundance) plot is a useful tool (De Livera et al., Analytical Chemistry, 2015). In this plot, all features are normalised (by across or within-batch medians) and plotted as a boxplot per sample. This plot can help to identify potential pipetting errors, sample spillage, injection volume changes or instrument sensitivity changes.
 
-> First, run the code below as it is. What observations can be made? Then, examine batch 6, uncommenting the line `#analysis_no_range =`. What insights can be gained from this? Identify the potential outlier sample by setting `x_axis_variable = "analysis_id"`. Set the y-axis limits manually `y_lim = c(-2,2)` and display all analyses to ascertain whether there are other trends or fluctuations.
+> First, run the code below as it is. What observations can be made? Then, examine batch 6, by uncommenting the line `#analysis_no_range =`. What do you see in this batch? Identify the potential outlier sample by setting `x_axis_variable = "analysis_id"`. Next, set the y-axis limits manually `y_lim = c(-2,2)` and display all analyses/batches again to inspect the data for other trends or fluctuations.
 
 ```{r rla-plot}
 midar::qc_plot_rla_boxplot(
@@ -152,9 +152,9 @@ qc_plot_pca(
 
 ## 8. Exclude technical outliers
 
-Based on the above RLA and PCA plots, we flagged a technical outlier and decided to remove it from all downstream processing `data_exclude_analyses()`.
+Based on the above RLA and PCA plots, we flagged a technical outlier and decided to remove it from all downstream processing via the function `data_exclude_analyses()`.
 
-> What do we now observe in the new PCA plot? Explore also different PCA dimensions (`pca_dim`).
+> What do we now see in the new PCA plot? Explore also different PCA dimensions (by modifying `pca_dim`).
 
 ```{r outlier-removal}
  # Exclude the sample from the processing
@@ -176,9 +176,9 @@ qc_plot_pca(
 
 ## 9. Response curves
 
-A linear response in quantification is a prerequisite for the accurate measurement of differences in analyte concentrations between samples. Given the considerable dynamic range of plasma lipid species abundances and the fact that the class-specific ISTD is spiked at a single concentration, verifying the linear response can be a valuable aspect of the analytical quality. While optimising the injected sample amount is primarily a matter of quality assurance, differences in instrument performance can affect the dynamic range. Therefore, we measured injection volume series at the start and end of this analysis.
+A linear response in quantification is a prerequisite for to compared differences in analyte concentrations between samples. Given the considerable dynamic range of plasma lipid species abundances and the fact that the class-specific ISTD is spiked at a single concentration, verifying the linear response can be a valuable aspect of the analytical quality assessment. While optimising the injected sample amount is primarily a matter of quality assurance (QA), differences in instrument performance can affect the dynamic range. Therefore, we measured injection volume series at the start and end of this analysis as a QC.
 
-> Look at these response curves. What do we learn from these results? Change the plotted lipid species by modifying `feature_incl_filt` (it can use regular expressions). Save a PDF of all lipids by setting `save_pdf = TRUE` and commenting out (add a `#` in front of) `feature_incl_filt`
+> Look at the response curves below. What do we see from these results? Change the plotted lipid species by modifying `feature_incl_filt` (it can use regular expressions). Save a PDF of all lipids by setting `save_pdf = TRUE` and commenting out (add a `#` in front of) `feature_incl_filt`
 
 ```{r responsecurves}
 # Exclude very low abundant features
@@ -199,9 +199,9 @@ qc_plot_responsecurves(
 
 ## 10. Isotope interference correction
 
-As demonstrated in the course presentation, there are several instances where the peaks of interest were co-integrated with the interfering isotope peaks of other lipid species. These intereferences can be subtracted from the raw intensities (areas) using the below function, which utilises information from the metadata.
+As demonstrated in the course presentation, there are several instances where the peaks of interest were co-integrated with the interfering isotope peaks of other lipid species. These intereferences can be subtracted from the raw intensities (areas) using the below function, which utilises information from the metadata. The relative abundances for the interfering fragments were obtained using LICAR (<https://github.com/SLINGhub/LICAR>).
 
-> Check the sheet "Features (Analytes)" in the metadata file (folder `data`). Which species were affected? Why should we correct for M+3 isotope interference?
+> Check the sheet "Features (Analytes)" in the metadata file (folder `data`). Which species were affected? Which information will you need? Why should we correct for M+3 isotope interference?
 
 ```{r isotope-correction}
 myexp <- midar::correct_interferences(myexp)
@@ -209,9 +209,9 @@ myexp <- midar::correct_interferences(myexp)
 
 ## 11. Normalization and quantification based on ISTDs
 
-The first step is to normalise each lipid species with its corresponding internal standard (ISTD). Subsequently, the concentrations are calculated based on the volume of the spiked-in ISTD solution, the concentration of the ISTDs in this solution, and the sample volume.
+The first step is to normalize each lipid species with its corresponding internal standard (ISTD). Subsequently, the concentrations are calculated based on the volume of the spiked-in ISTD solution, the concentration of the ISTDs in this solution, and the sample volume.
 
-> Visit the metadata template to view the corresponding details. You can also try to re-run e.g. above RLA and PCA plots using `variable = "norm_intensity"` or `variable = "conc".`
+> Visit the metadata template to view the corresponding details. You can also try to re-run e.g. above RLA and PCA plots with `variable = "norm_intensity"` or `variable = "conc"` to plot the normalized data.
 
 ```{r normalization}
 myexp <- midar::calc_normalize_by_istd(myexp)
@@ -221,9 +221,9 @@ myexp <- midar::calc_quant_by_istd(myexp)
 
 ## 12. Examine the effects of class-wide ISTD normalization
 
-The use of class-specific ISTDs is common practice in lipidomics. However, non-authentic internal standards may elute at different times, which can result in them being subject to different matrix effects and thus different responses than the analytes. They may also have different fragmentation properties. Consequently, the use of non-authentic ISTDs for normalization can lead to the introduction of artefacts, Such artefacts can manifest as a consideranle increase in variability than the expected reduction in technical variability. It it may therefore be helpful to assess ISTDs in particular during QA, but also QC assements and to use an alternative ISTD when observing artifecatcs. One approach to detecting potential ISTD-related artefacts is to compare the variability of QC and samples before and after normalisation.
+The use of class-specific ISTDs is common practice in lipidomics. However, non-authentic internal standards may elute at different times, which can result in them being subject to different matrix effects and thus different responses compared to the analytes. They may also differ in their fragmentation properties, which can also affect the response. Consequently, the use of non-authentic ISTDs for normalization can lead to the introduction of artefacts, which can manifest as increases in sample variability, rather than the expected reduction. It it therefore important to assess ISTDs during QA in particular, but also as QC, and to consider using alternative ISTDs when observing artefacts. One approach to detecting potential ISTD-related artefacts is to compare the variability of QC and samples before and after normalization.
 
-> What would you expect from such comarisons of CV? Do you notice potential issues with any of the ISTDs? What could be possible explanations for such an effect? And what would you do in this situation?
+> What would you expect from such comarisons of CV? Do you notice potential issues with any of the ISTDs below? What could be possible explanations for such an effect? And what would you do in this situation?
 
 ```{r norm-effects}
 myexp <- midar::qc_apply_feature_filter(myexp, intensity.median.spl.min = 1000, overwrite = FALSE)
@@ -237,7 +237,7 @@ qc_plot_normalization_cv(
 
 ## 13. Drift correction
 
-We're going to use a Gaussian kernel smoothing based on the study sample to correct for any drifts in the concentration data within each batch. This summary isn't meant to reflect the actual diagnostics of the fit, but rather to understand if the fit caused any artefacts. There is also an option to scale along the fit by setting `scale_smooth = TRUE`.
+We're going to use a Gaussian kernel smoothing based on the study sample to correct for any drifts in the concentration data within each batch. The summary return by the function below isn't meant as actual diagnostics of the fit, but rather to understand if the fit caused any major artefacts. There is also an option to scale along the fit by setting `scale_smooth = TRUE`.
 
 ```{r drift-corr}
 myexp <- midar::correct_drift_gaussiankernel(
@@ -275,7 +275,9 @@ my_trend_plot <- function(variable, feature){
 }
 ```
 
-> Let's use this before defined function to plot the trends of one selected example before and after within-batch smoothing. What do we observe? Try changing `batch_wise = FALSE` in the code chunk above with `correct_drift_gaussiankernel()` to run the run the smoothing across all batches. Would this be a valid alternative? NOTE: don't forget to change back to `batch_wise = TRUE` after the test.
+> Let's use this before defined function to plot the trends of one selected example before and after within-batch smoothing. What may have caused such a drift in the raw concentrations? Do the QC samples follow the trend of the sample? Look also at other lipid species.
+>
+> Try changing `batch_wise = FALSE` in the code chunk above with `correct_drift_gaussiankernel()` to run the run the smoothing across all batches. Would this be a valid alternative? NOTE: don't forget to change back to `batch_wise = TRUE` after the test.
 
 ```{r plot-trends}
 my_trend_plot("conc_raw", "PC 40:8")
@@ -286,7 +288,7 @@ my_trend_plot("conc", "PC 40:8")
 
 As we observed, the trend lines of the different batches are not aligned. We will use `correct_batcheffects()` to correct for median center (location) and scale differences between the batches. The define that the correction should be based on the study samples medians. An optional scale correction can be performed by setting `correct_scale = FALSE`. After the correction we directly plot our example lipid species again.
 
-> Change the sample type to `qc_type = "BQC"` to use the BQC to center the batches. What do we see from this?
+> Change the sample type to `qc_type = "BQC"` to use the BQC to center the batches. What do you observe?
 
 ```{r batch-effect-corr}
 myexp <- midar::correct_batcheffects(
@@ -300,9 +302,9 @@ my_trend_plot("conc", "PC 40:8")
 
 ## 15. Saving *runscatter* plots of all features as PDF
 
-For additional inspection and documentation, we can save plots for all or a selected subset of species. It is often preferable to exclude blanks, as they can exhibit random concentrations when signals of features and internal standards are in close proximity or below the limit of detection. The corresponding PDF can be accessed within the `output` subfolder.
+For additional inspection and documentation, we can save plots for all or a selected subset of species. It is often preferable to exclude blanks, as they can exhibit random concentrations when signals of features and internal standards are in close proximity or below the limit of detection. The corresponding PDF can be accessed within the `output` subfolder. Use `filt_` arguments to include or exclude specific analytes. The filter can use regular expressions (regex). (Hint: try using ChatGPT to generate more complex regex-based filters).
 
-Try explore the effect of setting `cap_outliers` to `TRUE`or `FALSE`. Run `?runscatter` in the console or press `F2` on the function name to see all available options for `qc_plot_runscatter()`.
+Explore the effect of setting `cap_outliers` to `TRUE`or `FALSE`. Run `?runscatter` in the console or press `F2` on the function name to see all available options for `qc_plot_runscatter()`.
 
 ```{r saving-runscatter}
 #| eval: false
@@ -325,9 +327,9 @@ qc_plot_runscatter(
 
 ## 16. QC-based feature filtering
 
-Finally, we apply a set of filters to exclude features that don't meet the specific QC criteria. The function `qc_apply_feature_filter()` lets you set the filters based on the data and metadata. Just press `TAB` after the open bracket of `qc_apply_feature_filter()` to select, or press `F1` or run `?qc_apply_feature_filter` to view, the available filter criteria. The filter function may be applied multiple times, either overwriting and amending previously set filters.
+Finally, we apply a set of filters to exclude features that don't meet specific QC criteria. The function `qc_apply_feature_filter()` lets you apply such filters. Just press `TAB` after the open bracket of `qc_apply_feature_filter()` to select, or press `F1` or run `?qc_apply_feature_filter` to view, the available filter criteria. The filter function may be applied multiple times, either overwriting or amending previously set filters.
 
-> Explore the effects of the different filtering criteria and filtering thresholds. The plot below can be run in order to examine the effects visually.
+> Explore the effects of the different filtering criteria and filtering thresholds. The plot below in section 17 can be run in order to examine the effects visually.
 
 ```{r qc-filter}
 
@@ -353,7 +355,7 @@ myexp <- qc_apply_feature_filter(
 
 The plot below provides an overview of the data quality and the feature filtering. The segments in green indicate the number of species that passed all previously defined quality control (QC) filtering criteria. The rest are the number of species that failed the different filtering criteria. It should be noted that the criteria are hierarchically organised; a feature is only classified as failing a criterion (e.g., `CV`) when it has passed the hierarchically lower filters (e.g., `S/B` and `LOD`).
 
-> Are there any differences between lipid classes in terms of their analytical performance? What are the identified QC issues and what are possible explainations for these? What could be the implications if you want to run the next analysis?
+> Are there any differences between lipid classes in terms of their analytical performance? What are the identified QC issues and what are possible explanations for these? What could be the implications if you want to run the next analysis?
 
 ```{r qc-summary-1}
 midar::qc_plot_summary_classes(myexp, include_qualifier = FALSE)
@@ -369,7 +371,7 @@ midar::qc_plot_summary(myexp, include_qualifier = FALSE)
 
 ## 18. Saving a report with data, metadata and processing details
 
-A record of the data post-processing can be generated in the form of an formatted `Excel` workbook comprising multiple sheets, each containing raw and processed datasets, associated metadata and feature quality control metrics.
+A detailed summary of the data post-processing can be generated in the form of an formatted `Excel` workbook comprising multiple sheets, each containing raw and processed datasets, associated metadata, feature quality control metrics, and information about the applied processing steps.
 
 > Explore the report that was saved in the `output` folder.
 
@@ -377,9 +379,9 @@ A record of the data post-processing can be generated in the form of an formatte
 midar::report_write_xlsx(myexp, path = "./output/myexp-midar_report.xlsx")
 ```
 
-You can also save specific data subsets as a clean flat, wide CSV file. This is how we shared the data for the statistical analysis that will be presented in the next part of the workshop.
+You can also save specific data subsets as a clean flat, wide CSV file. This is how we shared the data for the statistical analysis that will be presented in the next part of this workshop!
 
-> Specify which data to export using function arguments.
+> Specify which data to export using function arguments and check the generated CSV files.
 
 ```{r save-csv}
 midar::report_write_csv(
@@ -393,9 +395,9 @@ midar::report_write_csv(
 
 ## 19. Sharing the `MidarExperiment` dataset
 
-The myexp object can be saved as an `RDS` file and shared. `RDS` files are serialized R variables/objects that can be opened in R even in the absence of `midar`. The imported `MidarExperiment` object can be utilized for re-processing, plotting, or inspection using the `midar` package.
+The `myexp` object can be saved as an `RDS` file and shared. `RDS` files are serialized R variables/objects that can be opened in R by anyone, even in the absence of `midar` package. The imported `MidarExperiment` object can also be utilized for re-processing, plotting, or inspection using the `midar` package.
 
-> Save the dataset to the disk and re-opened under a different name to ascertain its status. Compare it with the original dataset that is in the memory (`mexp`)
+> Save the dataset to the disk and re-open it under a different name. Check the status comparing it with the dataset generated in the workflow above (`mexp`)
 
 ```{r save-rds}
 saveRDS(myexp, file = "./output/myexp-midar.rds", compress = TRUE)
