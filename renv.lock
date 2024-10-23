@@ -1067,7 +1067,7 @@
       "RemoteUsername": "SLINGhub",
       "RemoteRepo": "midar",
       "RemoteRef": "development",
-      "RemoteSha": "1a3ccc6dec8696ff7e4bb0535227e342a63e4146",
+      "RemoteSha": "c82fe39bf14d34607dc352bb701646342685c6aa",
       "Requirements": [
         "R",
         "assertr",
@@ -1098,7 +1098,7 @@
         "tidyr",
         "tidyselect"
       ],
-      "Hash": "797e4b9e4cad11b9d642f49a70ff90f6"
+      "Hash": "269236948c78b54d97992f45cf4b52d5"
     },
     "mime": {
       "Package": "mime",
