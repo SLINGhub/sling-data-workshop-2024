@@ -135,7 +135,7 @@ midar::qc_plot_rla_boxplot(
 
 A principal component analysis (PCA) plot provides an alternative method for obtaining an overview of the study and quality control (QC) samples, as well as for identifying potential issues, such as batch effects, technical outliers, and differences between the sample types.
 
-| Add blanks and sample dilutions to the plot, by including `"PBLK", "RQC"` to `qc_types =`  below. What do you think the resulting PCA plot suggests now?
+| Add blanks and sample dilutions to the plot, by including `"PBLK", "RQC"` to `qc_types =` below. What do you think the resulting PCA plot suggests now?
 
 ```{r pca-before}
 qc_plot_pca(
