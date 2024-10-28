@@ -3,5 +3,6 @@ library(rgoslin)
 library(tidyverse)
 library(rmarkdown)
 library(httr2)
+library(rmzqc)
 ```
 
