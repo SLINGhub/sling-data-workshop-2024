@@ -1,0 +1,113 @@
+ONTOLOGY SOURCE REFERENCE
+Term Source Name	MTBLS	EFO	NCIT	OBI
+Term Source File	https://www.ebi.ac.uk/metabolights/	http://data.bioontology.org/ontologies/EFO		http://data.bioontology.org/ontologies/OBI
+Term Source Version	1.0	132		29
+Term Source Description	Metabolights Ontology	Experimental Factor Ontology		Ontology for Biomedical Investigations
+INVESTIGATION
+Investigation Identifier	1552652580231
+Investigation Title	Investigation
+Investigation Description	
+Investigation Submission Date	
+Investigation Public Release Date	2020-04-15
+Comment[Created With Configuration]	MetaboLightsConfig20150707
+Comment[Last Opened With Configuration]	MetaboLightsConfig20150707
+INVESTIGATION PUBLICATIONS
+Investigation PubMed ID
+Investigation Publication DOI
+Investigation Publication Author List
+Investigation Publication Title
+Investigation Publication Status
+Investigation Publication Status Term Accession Number
+Investigation Publication Status Term Source REF
+INVESTIGATION CONTACTS
+Investigation Person Last Name
+Investigation Person First Name
+Investigation Person Mid Initials
+Investigation Person Email
+Investigation Person Phone
+Investigation Person Fax
+Investigation Person Address
+Investigation Person Affiliation
+Investigation Person Roles
+Investigation Person Roles Term Accession Number
+Investigation Person Roles Term Source REF
+STUDY
+Study Identifier	MTBLS1375
+Study Title	LipidCreator workbench to probe the lipidomic landscape - Targeted lipidomics analysis of Human Plasma samples and comparison with NIST SRM 1950 standard
+Study Description	<p>Here we present LipidCreator, a software that fully supports targeted lipidomics assay development. LipidCreator offers a comprehensive framework to compute MS/MS fragment masses for over 60 lipid classes. LipidCreator provides all functionalities needed to define fragments, manage stable isotope labeling, optimize collision energy and generate in silico spectral libraries. We validate LipidCreator assays computationally and analytically and prove that it is capable to generate large targeted experiments to analyze blood and to dissect lipid-signaling pathways such as in human platelets.</p><p><br></p><p>In MTBLS1375, to validate tissue-specific transitions which we generated with LipidCreator, we conducted quantitative lipidomics experiments monitoring 433 lipids in the plasma of 21 healthy Asian human subjects. For a subset of 50 individual lipid levels the concentrations were compared to a recently conducted ring trial monitoring the lipid content of a reference material obtained from a mixed American population (NIST SRM 1950). The rationale behind this was to see if the creation of a list including internal standard and endogenous lipids lead to similar quantitative results as the ring trial experiment.</p><p><br></p><p>Studies linked to this manuscript include;</p><p><a href='https://www.ebi.ac.uk/metabolights/editor/study/MTBLS1333' rel='noopener noreferrer' target='_blank'>MTBLS1333; LipidCreator: Collision Energy Optimization and Fragment Intensity Prediction for Lipid Mediators - Thermo QExactive HF</a></p><p><a href='https://www.ebi.ac.uk/metabolights/editor/study/MTBLS1334' rel='noopener noreferrer' target='_blank'>MTBLS1334; LipidCreator: Collision Energy Optimization and Fragment Intensity Prediction for Lipid Mediators - Agilent QTof</a></p><p><a href='https://www.ebi.ac.uk/metabolights/editor/study/MTBLS1369' rel='noopener noreferrer' target='_blank'>MTBLS1369; LipidCreator: Platelet isolation and stimulation - Targeted Phospho- and Glycerolipid Profiling</a></p><p><a href='https://www.ebi.ac.uk/metabolights/editor/study/MTBLS1375' rel='noopener noreferrer' target='_blank'>MTBLS1375; LipidCreator: Targeted lipidomics analysis of Human Plasma samples and comparison with NIST SRM 1950 standard</a></p><p><a href='https://www.ebi.ac.uk/metabolights/editor/study/MTBLS1376' rel='noopener noreferrer' target='_blank'>MTBLS1376; LipidCreator: Targeted lipidomics analysis of S. cerevisiae to determine true and false identification</a></p><p><a href='https://www.ebi.ac.uk/metabolights/editor/study/MTBLS1381' rel='noopener noreferrer' target='_blank'>MTBLS1381; LipidCreator: Platelet isolation and stimulation - Targeted Lipid Mediator Profiling</a></p><p><a href='https://www.ebi.ac.uk/metabolights/editor/study/MTBLS1382' rel='noopener noreferrer' target='_blank'>MTBLS1382; LipidCreator: Platelet isolation and stimulation - DIA Lipid Mediator Validation</a></p>
+Study Submission Date	
+Study Public Release Date	2020-04-15
+Study File Name	s_MTBLS1375.txt
+STUDY DESIGN DESCRIPTORS
+Study Design Type	targeted metabolites	Lipidomics	ultra-performance liquid chromatography-mass spectrometry
+Study Design Type Term Accession Number	http://www.ebi.ac.uk/metabolights/ontology/MTBLS_000272	http://www.ebi.ac.uk/metabolights/ontology/MTBLS_000069	http://www.ebi.ac.uk/metabolights/ontology/placeholder
+Study Design Type Term Source REF	MTBLS	MTBLS	MTBLS
+STUDY PUBLICATIONS
+Study PubMed ID	
+Study Publication DOI	10.1038/s41467-020-15960-z
+Study Publication Author List	Bing Peng, Dominik Kopczynski, Brian S Pratt, Christer S Ejsing, Bo Burla, Martin Hermansson, Peter Imre Benke, Sock Hwee Tan, Mark Y. Chan, Federico Torta, Dominik Schwudke, Sven Meckelmann, Cristina Coman, Oliver J. Schmitz, Brendan MacLean, Oliver Borst, Markus Wenk, Nils Hoffmann, Robert Ahrends
+Study Publication Title	LipidCreator workbench to probe the lipidomic landscape
+Study Publication Status	Published
+Study Publication Status Term Accession Number	http://www.ebi.ac.uk/efo/EFO_0001796
+Study Publication Status Term Source REF	EFO
+STUDY FACTORS
+Study Factor Name	Sample type	Reference sample	Gender	Age	Ethnic group
+Study Factor Type	Sample type	Reference sample	Gender	Age	Ethnic group
+Study Factor Type Term Accession Number	http://www.ebi.ac.uk/metabolights/ontology/placeholder	http://www.ebi.ac.uk/efo/EFO_0009654	http://purl.obolibrary.org/obo/NCIT_C17357	http://purl.obolibrary.org/obo/NCIT_C25150	http://www.ebi.ac.uk/efo/EFO_0001799
+Study Factor Type Term Source REF	MTBLS	EFO	NCIT	NCIT	EFO
+STUDY ASSAYS
+Study Assay File Name	a_MTBLS1375_LC-MS_positive_reverse-phase_metabolite_profiling.txt
+Study Assay Measurement Type	metabolite profiling
+Study Assay Measurement Type Term Accession Number	http://purl.obolibrary.org/obo/OBI_0000366
+Study Assay Measurement Type Term Source REF	OBI
+Study Assay Technology Type	mass spectrometry
+Study Assay Technology Type Term Accession Number	http://purl.obolibrary.org/obo/OBI_0000470
+Study Assay Technology Type Term Source REF	OBI
+Study Assay Technology Platform	Liquid Chromatography MS - positive - reverse phase
+STUDY PROTOCOLS
+Study Protocol Name	Sample collection	Extraction	Chromatography	Mass spectrometry	Data transformation	Metabolite identification
+Study Protocol Type	Sample collection	Extraction	Chromatography	Mass spectrometry	Data transformation	Metabolite identification
+Study Protocol Type Term Accession Number						
+Study Protocol Type Term Source REF						
+Study Protocol Description	<p>Blood from 21 healthy individuals (12 males, 9 females; 22 - 44 years old) was obtained by venipuncture into K3EDTA BD Vacutainer tubes. Platelet poor plasma was collected after centrifugation for 10 min at 3,850 g (4 °C) and stored at -80 °C until analysis. The collection and use of human plasma samples has been approved by the Institutional Review Board of the National University of Singapore (NUS-IRB N-17-082E and NUS-IRB B-15-094, Singapore).</p><p><br></p><p>Control samples were as follows;</p><p>The NIST Standard Reference Material for Human Plasma (SRM1950) was purchased from the National Institute for Standards and Technology (Gaithersburg, MD, USA).</p><p>Batched Process Quality Control (BQC) samples were generated by pooling equal volumes plasma samples, aliquoting and extracting together with study samples. </p><p>Technical QC (TQC) were re-aliquoted from pooled extracts of non-plasma samples and injected repeatedly.</p><p>Response QC samples (RQC) were prepared as a diluted sample series from the TQC samples to determine linear response.</p><p>Long Term Reference samples were also included to determine assay long-term stability and QC checks (not for quantification within this study).</p>	<p><br></p><p>Plasma lipids were extracted using a single-phase, butanol/methanol-based method [1]. For each plasma sample (including PQC), 15 µl sample was transferred to a 2&nbsp;ml Eppendorf tube. Subsequently, 150 µl of 1-butanol:methanol (1:1, v/v) containing 7.5 µl deuterated internal standard mix SPLASH(R) LIPIDOMIX(R) (Avanti Polar Lipids, Alabaster, USA), 44 nmol/l ceramide d18:1/16:0-D31 (Avanti) and 100 nmol/l lactosylceramide d18:1/16:0-D3 (Matreya LCC, State College, PA, USA) was added. Tubes were vortexed for 30 sec and sonicated for 30&nbsp;min in an ultrasound water bath (20&nbsp;°C). After centrifugation (10 min, 14,000&nbsp;g, 4&nbsp;°C), the supernatant was transferred to polypropylene autosampler vials for subsequent LC-MS analysis.</p><p><br></p><p>References:</p><p>[1] Alshehry, Z.H. et al. An Efficient Single Phase Method for the Extraction of Plasma Lipids. Metabolites 5, 389-403 (2015).</p>	<p>A liquid chromatography mass spectrometry method, previously published by Huynh et al. [1] was used with modifications. The mobile phases consisted of (A) water: acetonitrile:2-propanol (50:30:20, v/v/v) and (B) water:acetonitrile:2-propanol (1:9:90, v/v/v), both containing 10 mmol/l ammonium formate and 1 ml/l formic acid. The Agilent ZORBAX RRHD Eclipse Plus C18 (2.1 x 100 mm, 1.8 µm, 95 Å) column was maintained at 45°C and the LC gradient (flow rate 0.4 ml/min) was as following: 15% to 50% B, 0 - 2.5 min; to 57% B, 2.6 min; to 70% B, 9 min; to 93% B, 9.1 min; to 96% B, 11.0 min; to 100% B, 11.9 min; to 15% B, 12 min; 15% B until end (15 min total).</p><p><br></p><p>References:</p><p>[1] Huynh, K. et al. High-Throughput Plasma Lipidomics: Detailed Mapping of the Associations with Cardiometabolic Risk Factors. Cell Chem Biol 26, 71-84 e74 (2019).</p>	<p>An Agilent 6495A triple quadrupole MS (Agilent Technologies, Santa Clara, CA) was used with the following source parameters: gas temperature 150 °C, gas flow 17 l/min, nebulizer 20 psi, sheat gas heater 250 °C, sheat gas flow 10 l/min, capillary voltage 3500 V. Ion Funnel parameters: pos high pressure RF 180, pos low pressure RF 160. Data were acquired in positive mode using dynamic multiple reaction monitoring (MRM), monitoring 302 lipid species reported by Saw et al. [1] (total cycle time 800 ms). Each sample, maintained at 10°C in the autosampler, was measured in quadruplicates (injection volume 1 µl) within two distinct blocks (e.g. A 1,2 and B 1,2), interspersed with QC and blank QC samples.</p><p><br></p><p>References:</p><p>[1] Saw, W.Y. et al. Establishing multiple omics baselines for three Southeast Asian populations in the Singapore Integrative Omics Study. Nature communications 8, 653 (2017).</p>	<p>The native MS data was analyzed with Skyline (64-bit, 4.2.0.18305). </p>	<p>LipidCreator was used to create the transition list. 52 lipid species which contain the species previously reported by Bowden et al. [1] were selected for quantification. Peak integration of MRM traces was done using Skyline. Each lipid species was manually validated for the correct annotation [2,3] and quantified when (i) the signal-to-noise ratio was greater than three, compared to lipid species signals in blank samples and (ii) the coefficient of variation of the species in the PQC samples was less than 20% [3]. The concentrations of the lipid species were calculated by relating the peak area of each lipid species to the peak area of the corresponding internal standard. Transition lists, integrated peak tables and the final absolute lipid quantities, together with an R script to create the MetaboLights maf metabolite tables, are provided in the project directory.</p><p><br></p><p>References:</p><p>[1] Bowden, J.A. et al. Harmonizing lipidomics: NIST interlaboratory comparison exercise for lipidomics using SRM 1950-Metabolites in Frozen Human Plasma. Journal of Lipid Research 58, 2275-2288 (2017).</p><p>[2] Huynh, K. et al. High-Throughput Plasma Lipidomics: Detailed Mapping of the Associations with Cardiometabolic Risk Factors. Cell Chem Biol 26, 71-84 e74 (2019).</p><p>[3] Sieber-Ruckstuhl, N.S. et al. Changes in the Canine Plasma Lipidome after Short- and Long-Term Excess Glucocorticoid Exposure. Scientific Reports 9, 6015 (2019).</p>
+Study Protocol URI						
+Study Protocol Version						
+Study Protocol Parameters Name		Post Extraction;Derivatization	Chromatography Instrument;Autosampler model;Column model;Column type;Guard column	Scan polarity;Scan m/z range;Instrument;Ion source;Mass analyzer		
+Study Protocol Parameters Name Term Accession Number		;	;;;;	;;;;		
+Study Protocol Parameters Name Term Source REF		;	;;;;	;;;;		
+Study Protocol Components Name						
+Study Protocol Components Type						
+Study Protocol Components Type Term Accession Number						
+Study Protocol Components Type Term Source REF						
+STUDY CONTACTS
+Study Person Last Name	Hoffmann	Peng	Ahrends	Bo	Federico	Coman
+Study Person First Name	Nils	Bing	Robert	Burla	Torta	Cristina
+Study Person Mid Initials				Johannes		
+Study Person Email	nils.hoffmann@isas.de	bing.peng@isas.de	robert.ahrends@isas.de	bo.burla@nus.edu.sg	bchfdtt@nus.edu.sg	cristina.coman@isas.de
+Study Person Phone	+4923113924239		+4923113924173			
+Study Person Fax						
+Study Person Address	"ISAS e.V.
+Otto-Hahn-Straße 6b
+44227 Dortmund, Germany"	"ISAS e.V.
+Otto-Hahn-Straße 6b
+44227 Dortmund, Germany"	"ISAS e.V.
+Otto-Hahn-Straße 6b
+44227 Dortmund, Germany"	"Department of Biochemistry
+
+YLL School of Medicine
+
+National University of Singapore
+Centre for Life Sciences
+28 Medical Drive, Singapor 117456"	"Department of Biochemistry
+
+YLL School of Medicine
+
+National University of Singapore
+Centre for Life Sciences
+28 Medical Drive, Singapor 117456"	"ISAS e.V.
+Otto-Hahn-Straße 6b
+44227 Dortmund, Germany"
+Study Person Affiliation	Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V.	Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V.	Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V.	SLING - Singapore Lipidomics Incubator	SLING - Singapore Lipidomics Incubator	Leibniz-Institut für Analytische Wissenschaften – ISAS – e.V.
+Study Person Roles	Co-Investigator	Co-Investigator	Principal Investigator	Co-Investigator	Co-Investigator	Co-Investigator
+Study Person Roles Term Accession Number	http://purl.obolibrary.org/obo/NCIT_C51812	http://purl.obolibrary.org/obo/NCIT_C51812	http://purl.obolibrary.org/obo/NCIT_C19924	http://purl.obolibrary.org/obo/NCIT_C51812	http://purl.obolibrary.org/obo/NCIT_C51812	http://purl.obolibrary.org/obo/NCIT_C51812
+Study Person Roles Term Source REF	NCIT	NCIT	NCIT	NCIT	NCIT	NCIT
