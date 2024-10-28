@@ -1,8 +1,180 @@
-```{r}
+---
+title: "SLING Data Analysis Workshop - FAIR Data"
+author: "Nils Hoffmann"
+format: html
+editor: visual
+---
+
+## 1. Introduction
+
+Based on the data created by the previous steps of this workshop, we will transform the data to conform with the lipid shorthand nomenclature using the \`rgoslin\` library. We can also use the Goslin webapplication to retrieve cross-links for annotated lipids to corresponding entries in LIPID MAPS and SwissLipids.
+
+We will look into creating and visualizing comprehensive QC metrics using the rmzqc library in the mzQC format, which can be used to communicate QC-related information about experiments for submission to public data repositories. We have already calculated some QC values in step 2, which we will include in our mzQC report.
+
+In a final step, we will prepare a submission to MetaboLights by creating the necessary files from our data.
+
+We will use the tidyverse libraries for most of the data manipulation and conversion.
+
+```{r, warning=FALSE}
+
+#getwd()
+rm(list=ls()) ### clear the deck
+dir.create("output")
 library(rgoslin)
 library(tidyverse)
 library(rmarkdown)
 library(httr2)
+library(jsonlite)
 library(rmzqc)
+library(openxlsx2)
 ```
 
+## 2. Parsing the existing results
+
+In a first step, we will read in the existing results from EXCEL into R dataframes, more precisely into "Tibbles", the main datastructure used within the tidyverse, that is compatible with the native datastructure used within base R.
+
+```{r}
+# we could also load the rds object we stored earlier, to work with the objects instead of the tables:
+# my_saved_exp <- readRDS(file = "../Part2_Postprocessing/output/myexp-midar.rds")
+# we will use the xlsx file to show how to use the workbook
+workbook <- wb_load("data/sPerfect-MRMkit-filtered-20241018.xlsx")
+# select sheet, transform data frame and print head
+sample_metadata <- workbook |> wb_to_df(sheet = "SampleMetadata")
+sample_metadata |> head()
+```
+
+Now that we have the sample metadata, let's retrieve the feature metadata, too:
+
+```{r}
+# select sheet, transform data frame and print head
+feature_metadata <- workbook |> wb_to_df(sheet = "FeatureMetadata")
+feature_metadata |> head()
+```
+## 3. Conversion / Normalization of Lipid Names
+
+How do we handle species isomers / isobars that we can only distinguish by RT? a) report as different entries with a remark, or b) group and report sum of intensity / quantity. For MetaboLights, we need to transform the data to another format. Lipid names need to be in the rows, assay / sample names need to be in columns. So in principle, we are able to retain the different names in the MetaboLights MAF file as well. So let's retrieve the concentrations for all samples that remained after QC filtering, including the QC samples:
+
+```{r}
+# parse lipid names
+conc_qcfilt_all_samples <- workbook |> wb_to_df (sheet = "Conc_QCfilt_AllSamples")
+conc_qcfilt_all_samples_rows <- conc_qcfilt_all_samples |> pivot_longer(cols=4:last_col(), names_to="metabolite_identification", values_to="concentration")
+# we will only use the analysis id as column name
+conc_qcfilt_all_samples_cols <- conc_qcfilt_all_samples_rows |> select(-acquisition_time_stamp,-qc_type) |> group_by(metabolite_identification) |>  pivot_wider(names_from=c(analysis_id), values_from="concentration")
+```
+
+Some of the lipids now have suffixes in their name that are interpreted only by Midar. We will therefor need to remove these suffixes before we can convert the lipid names to shorthand notation. However, we will move them into a separate column, called id_suffix. We will ignore any names containing multiple values, separated by the '|' character to simplify the conversion. However, you could also split these names into separate rows and then convert them to shorthand notation, but would need to recombine them afterwards. Goslin can simply skip these names, as they are not valid lipid names, so that we still retain the dimensions of the data. 
+
+```{r}
+# split off suffixes like (a), (b) etc. and [...] 
+conc_qcfilt_all_samples_cols_id_suffix <- conc_qcfilt_all_samples_cols |>
+mutate(id_suffix = str_extract(metabolite_identification, "\\(.*\\)")) |> mutate(metabolite_identification = str_remove(metabolite_identification, "\\(.*\\)")) |> 
+mutate(id_suffix = str_extract(metabolite_identification, "\\[.*\\]")) |> mutate(metabolite_identification = str_remove(metabolite_identification, "\\[.*\\]"))
+```
+
+We will use the rgoslin library on the metabolite_identification column to convert the lipid names to shorthand notation. We will encounter warnings for lipid names that are not valid, but we will ignore these for now.
+
+```{r}
+# convert lipid names to shorthand notation
+goslin_names <- conc_qcfilt_all_samples_cols_id_suffix$metabolite_identification |> parseLipidNames()
+```
+
+You can now inspect the resulting table containing the shorthand notation in the column Normalized.Name. Goslin retains the original name and adds a lot of additional information about each lipid that may be useful for downstream applications.
+
+```{r}
+head(goslin_names)
+```
+
+We will now merge the shorthand notation back into the original table and save the resulting table as an Excel file. We can do that with a left join, using the metabolite_identification column and the Original.Name column as the key. We do not want to join all columns of goslin_names, so we will only select the Normalized.Name, Lipid.Maps.Category, Lipid.Maps.Main.Class, Level, Mass and Sum.Formula columns for the merge.
+
+```{r}
+
+conc_qcfilt_all_samples_goslin <- conc_qcfilt_all_samples_cols_id_suffix |> left_join(goslin_names |> select(Original.Name, Normalized.Name, Lipid.Maps.Category, Lipid.Maps.Main.Class, Level, Mass, Sum.Formula), by=c("metabolite_identification"="Original.Name"))
+
+# let's also move the new columns to the front
+conc_qcfilt_all_samples_goslin <- conc_qcfilt_all_samples_goslin |> select(metabolite_identification, id_suffix, Normalized.Name, Lipid.Maps.Category, Lipid.Maps.Main.Class, Level, Mass, Sum.Formula, everything())
+
+```
+
+## 4. Inspecting data with LipidSpace
+
+Go to the <https://lifs-tools.org/lipidspace.html> website and download the latest version of LipidSpace for either Windows or Linux. We currently do not offer a Mac OS version.
+
+Unzip the downloaded archive, navigate to it and double click the "LipidSpace.exe" (on Windows) or "bash LipidSpace.sh" (on Linux).
+
+[LipidSpace](https://pubs.acs.org/doi/10.1021/acs.analchem.3c02449) accepts data in wide or long form and allows you to map columns manually. Test some of the tutorial to understand, how it works. Try to combine sample variables with the lipid names and quantities and try to visualize the data.
+
+## 5. Creating QC metrics
+
+We will use the [rmzqc library](https://cran.rstudio.com/web/packages/rmzqc/index.html) to create an example \[mzQC\](https://pubs.acs.org/doi/10.1021/jasms.4c00174) file. The [mzQC Website](https://hupo-psi.github.io/mzQC/) provides a number of examples from different MS domains. 
+
+Let's first retrieve the feature QC information from our report workbook. Not all QC metrics may already have a controlled vocabulary term in data/psi-ms.obo. A visually easier to browse version is available [here](https://www.ebi.ac.uk/ols4/ontologies/ms/classes/http%253A%252F%252Fpurl.obolibrary.org%252Fobo%252FMS_4000000?lang=en). All terms starting with 400 are in the mzQC namespace. We may also define user parameters, if no suitable term is available. 
+mzQC captures information about individual MS runs or groups of runs, e.g. PCA results to visualize potential batch effects. 
+
+```{r}
+# select sheet, transform data frame and print head
+feature_qc_metrics <- workbook |> wb_to_df(sheet = "Feature_QC_Metrics")
+feature_qc_metrics |> head()
+```
+
+```{r}
+library(rmzqc)
+# create a mzQC object
+
+# Neither MRMkit nor Midar have a CV entry in PSI MS yet, so we will use a generic term for now
+midar_software = MzQCanalysisSoftware(accession = "MS:1001456", name ="Midar", version = "0.1.2.9009", uri = "https://github.com/SLINGhub/midar")
+mrmkit_software = MzQCanalysisSoftware(accession = "MS:1001456", name = "MRMkit", version = "20240909", uri="https://github.com/MRMkit/MRMkit")
+# create MzQCrunQuality for each row in the sample_metadata table and collect into list
+# we will get warnings, since .D is not an officially recognized file extension at the moment
+run_qualities <- sample_metadata |> rowwise() |>
+  mutate(
+    mzQcRunQuality = list(
+      MzQCrunQuality$new(
+        metadata = MzQCmetadata$new(
+          label = analysis_id,
+          inputFiles = list(
+            MzQCinputFile$new(
+              basename(analysis_id),
+              localFileToURI(paste(analysis_id, ".D", sep=""), FALSE),
+              getCVTemplate(accession = filenameToCV(paste(analysis_id, ".D", sep="")))
+            )
+          ),
+          analysisSoftware = list(midar_software, mrmkit_software)
+        ),
+        # add batch_label to each mzQcRunQuality
+        qualityMetrics = list(
+          MzQCqualityMetric$new(
+            accession = "MS:4000088",
+            name = "batch label",
+            description = "Used to supply batch label information with any string value.",
+            value = batch_id
+          )
+        )
+      )
+    )
+  ) |> pull(mzQcRunQuality) |> unlist()
+
+mzQC_document = MzQCmzQC$new(version = "1.0.0", 
+                             creationDate = MzQCDateTime$new(), 
+                             contactName = Sys.info()["user"], 
+                             contactAddress = "test@user.info", 
+                             description = "A minimal mzQC document for the MRMkit & Midar workshop",
+                             runQualities = list(run_qualities),
+                             setQualities = list(), 
+                             controlledVocabularies = list(getCVInfo()))
+
+## write it out
+mzqc_filename = paste0(getwd(), "/output/mrmkit-midar.mzQC")
+writeMZQC(mzqc_filename, mzQC_document)
+cat(mzqc_filename, "written to disk!\n")
+```
+
+## 6. MetaboLights Submission Format
+
+MetaboLights uses the so-called **I**nvestigation, **S**tudy, **A**ssay tab-separated format to encode metadata about the experimental details (ISA-Tab). Specifically for MetaboLights, there is an additional file, called the **M**etabolite **A**nnotation **F**ormat (MAF) file.
+
+The study \[MTBLS1375\](https://www.ebi.ac.uk/metabolights/MTBLS1375) is an example of how a targeted lipidomics study can be reported in MetaboLights (isomers were summed in this case and reported only on species / subspecies level). You can find the corresponding files under `data/MTBLS1375`, excluding the original mzML and raw data files. Back when the study was submitted, Goslin was not available, so the lipid names are not in shorthand notation.
+
+Check the different files with a spreadsheet software to understand their structure. MetaboLights has an online editor that supports you when you create your own submission from scratch. Most importantly, you will need to select the type of assay / experiment you are reporting on, which includes information MS method and workflow, e.g. Direct Infusion, Separation, Imaging and automatically sets default columns for the different files.
+
+Above, we have already created a file that is close to the MAF file format.
+Try to identify the missing / different columns and create a MAF file from the data we have prepared. A list of the necessary columns is also available in the `data/MTBLS1375` folder in the `transform_to_m.R` file.
