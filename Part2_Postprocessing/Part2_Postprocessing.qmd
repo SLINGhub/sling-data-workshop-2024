@@ -180,6 +180,10 @@ A linear response in quantification is a prerequisite for to compared difference
 
 > Look at the response curves below. What do we see from these results? Change the plotted lipid species by modifying `feature_incl_filt` (it can use regular expressions). Save a PDF of all lipids by setting `save_pdf = TRUE` and commenting out (add a `#` in front of) `feature_incl_filt`
 
+::: callout-important
+Chekc
+:::
+
 ```{r responsecurves}
 # Exclude very low abundant features
 myexp <- midar::qc_apply_feature_filter(myexp, intensity.median.spl.min = 200)
@@ -225,14 +229,14 @@ The use of class-specific ISTDs is common practice in lipidomics. However, non-a
 
 > What would you expect from such comarisons of CV? Do you notice potential issues with any of the ISTDs below? What could be possible explanations for such an effect? And what would you do in this situation?
 
-```{r norm-effects}
+```{r norm-effects, fig.height=6}
 myexp <- midar::qc_apply_feature_filter(myexp, intensity.median.spl.min = 1000, overwrite = FALSE)
 qc_plot_normalization_cv(
   data = myexp, 
   filter_data = FALSE, 
   qc_type = "SPL", 
   var_before = "intensity", 
-  var_after = "norm_intensity")
+  var_after = "norm_intensity", ncol = 6)
 ```
 
 ## 13. Drift correction
